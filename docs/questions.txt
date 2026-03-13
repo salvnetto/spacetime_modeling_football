@@ -1,0 +1,11 @@
+
+
+- Can you predict the next event (pass, shot, dribble) from the spatiotemporal configuration of all players?
+- Before a turnover, is there a measurable change of the team's formation? 
+- Does where an event happens affect what happens next?
+- How much space does each player truly control at every second? (Zone of influence)
+
+- Do games have temporal phases?
+- What is the space-time signature of a dangerous attack?
+- How does the team shape deform in response to ball position?
+- Does a team become more or less spatially predictable as a game progresses? 
