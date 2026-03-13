@@ -1,4 +1,44 @@
-.Rproj.user
+# History files
 .Rhistory
+.Rapp.history
+
+# Session Data files
 .RData
+.RDataTmp
+
+# User-specific files
 .Ruserdata
+
+# RStudio files
+.Rproj.user/
+
+# R Environment Variables
+.Renviron
+
+# knitr and R markdown
+*.knit.md
+*.utf8.md
+
+# Output files (optional, remove if you want to track them)
+*.html
+*.pdf
+*.docx
+
+# Packrat dependency management
+packrat/lib*/
+packrat/src/
+
+# renv dependency management
+renv/library/
+renv/local/
+.renv/
+
+# Data files (optional, uncomment if needed)
+# *.csv
+# *.rds
+# *.rda
+# *.Rdata
+
+# OS files
+.DS_Store
+Thumbs.db
