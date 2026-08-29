@@ -1,6 +1,7 @@
 # History files
 .Rhistory
 .Rapp.history
+.Rprofile
 
 # Session Data files
 .RData
@@ -32,3 +33,4 @@ dgruyter.sty
 main.tex
 dgruyter.ist
 references.bib
+referencia/
