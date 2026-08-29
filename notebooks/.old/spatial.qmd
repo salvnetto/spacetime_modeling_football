@@ -1,0 +1,193 @@
+
+```{r}
+library(tidyverse)
+library(here)
+library(readr)
+library(data.table)
+library(INLA)
+library(fmesher)
+library(sp)
+library(sf)
+
+source(here('src', 'plots.R'))
+source(here('src', 'helpers.R'))
+```
+
+# ---data
+
+```{r}
+events <- read_csv(here('data', 'events_dfl.csv')) %>% 
+  distinct() %>% 
+  rename(team_with_poss = team_id)
+
+tracking <- read_csv(here('data', 'tracking_dfl_secs.csv')) %>%
+  distinct() %>% 
+  own_goal_direction()
+
+
+pitch_length <- 105
+pitch_width <- 68
+```
+
+```{r}
+shots <- events %>%
+  filter(type == "SHOT", is.na(subtype)) %>% 
+  distinct() %>% 
+  mutate(
+    shot_time = round(start_time_s),
+    start_window = shot_time - 32,
+    end_window   = shot_time - 2
+  ) %>% 
+  select(match_id, period, start_window, end_window, team_with_poss, success) %>% 
+  filter(success %in% 'TRUE') %>% 
+  slice(1)
+
+setDT(tracking)
+setDT(shots)
+
+tracking <- tracking[, time_seg_original := time_seg]
+tracking_inla <- tracking[shots,
+  on = .(
+    match_id,
+    period,
+    time_seg >= start_window,
+    time_seg <= end_window
+  ),
+  nomatch = 0
+] %>%
+  distinct() %>% 
+  filter(player_id != 'ball', !is.na(x_pitch)) %>% 
+  select(-time_seg, -time_seg.1) %>% 
+  rename(time_seg = time_seg_original)
+```
+
+```{r}
+coords <- as.matrix(tracking_inla[, c("x_pitch", "y_pitch")])
+```
+
+# ---mesh
+
+```{r}
+# S MESH
+pitch_x <- c(0, 105)
+pitch_y <- c(0, 68)
+
+pitch_boundary <- matrix(c(
+  pitch_x[1], pitch_y[1],
+  pitch_x[2], pitch_y[1],
+  pitch_x[2], pitch_y[2],
+  pitch_x[1], pitch_y[2],
+  pitch_x[1], pitch_y[1]
+), ncol = 2, byrow = TRUE)
+
+boundary <- fm_segm(pitch_boundary)
+
+mesh <- fm_mesh_2d_inla(
+  boundary = boundary,
+  max.edge = c(3, 10),   
+  offset = c(2, 15),
+  cutoff = 1      
+)
+
+poly_pitch <- st_polygon(list(as.matrix(pitch_boundary))) %>% st_sfc()
+```
+
+```{r}
+plot(mesh)
+lines(pitch_boundary, col="red", lwd=2)
+```
+
+# ---spde
+
+```{r}
+spde <- inla.spde2.matern(mesh = mesh, alpha = 2)
+
+m <- spde$n.spde
+```
+
+# ---A matrix
+
+```{r}
+ips <- fm_int(mesh, samplers = poly_pitch)
+ip_coords <- st_coordinates(ips)[, 1:2]
+A_int <- fm_basis(mesh, loc = ip_coords)
+
+A_obs <- fm_basis(mesh, loc = coords)
+
+n <- nrow(coords)
+nv <- mesh$n
+n_inst = nrow(A_int)
+```
+
+```{r}
+# Integration Stack (Dual Mesh)
+stk_ip <- inla.stack(
+  data = list(y = 0, e = ips$weight), # Count=0, Exposure=Area
+  A = list(A_int, 1),                         
+  effects = list(
+    list(s = 1:spde$n.spde), # The spatial index (size of mesh)
+    list(b0 = rep(1, n_inst))# The intercept (size of A_int rows)
+  ),
+  tag = "ip"
+)
+
+# Observation Stack (The actual points)
+stk_obs <- inla.stack(
+  data = list(y = 1, e = rep(0, n)), # Count=1, Exposure=0
+  A = list(A_obs, 1),     
+  effects = list(
+    list(s = 1:spde$n.spde),
+    list(b0 = rep(1, n))
+  ),
+  tag = "obs"
+)
+
+full_stack <- inla.stack(stk_ip, stk_obs)
+```
+
+# ---model
+
+```{r}
+formula <- y ~ 0 + b0 + f(s, model = spde)
+
+res <- inla(
+  formula,
+  family = 'poisson',
+  data = inla.stack.data(full_stack),
+  control.predictor = list(compute = TRUE, link = 1, A = inla.stack.A(full_stack)),
+  E = inla.stack.data(full_stack)$e
+)
+```
+
+# ---result
+
+```{r}
+grid_proj <- fm_evaluator(
+  mesh, 
+  dims = c(100, 100),
+  xlim = c(0, 105), 
+  ylim = c(0, 68)
+)
+
+field_mean <- res$summary.random$s$mean
+intercept_mean <- res$summary.fixed$mean[1]
+log_intensity <- intercept_mean + field_mean
+heat_values <- fm_evaluate(grid_proj, log_intensity)
+heat_intensity <- heat_values
+
+plot_df <- expand.grid(x = grid_proj$x, y = grid_proj$y)
+plot_df$intensity <- as.vector(heat_intensity)
+
+ggplot(plot_df, aes(x = x, y = y, fill = intensity)) +
+  geom_tile() +
+  annotate_pitch(
+      dimensions = pitch_international,
+      fill       = NA,
+      colour     = "#C8C8C8",
+      limits     = FALSE
+    ) + 
+  scale_fill_viridis_c(option = "magma") +
+  coord_fixed() +
+  theme_minimal()
+```
+

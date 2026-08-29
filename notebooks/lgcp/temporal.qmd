@@ -1,0 +1,305 @@
+
+```{r}
+library(tidyverse)
+library(here)
+library(readr)
+
+library(INLA)
+library(INLAspacetime)
+library(inlabru)
+library(fmesher)
+library(sp)
+library(sf)
+
+
+source(here('src', 'plots.R'))
+source(here('src', 'helpers.R'))
+source(here('src', 'modeling.R'))
+```
+
+# Data
+
+```{r}
+events <- read_csv(here('data', 'events_dfl.csv')) %>% 
+  distinct() %>% 
+  rename(team_with_poss = team_id)
+
+tracking <- read_csv(here('data', 'tracking_dfl_secs.csv')) %>%
+  distinct() %>% 
+  own_goal_direction() %>% 
+  filter(is_goalkeeper == 0)
+
+ball <- tracking %>% 
+  filter(player_id == 'ball') %>% 
+  select(period, time_sec_orig = time_seg, x_ball = x_pitch, y_ball = y_pitch, match_id)
+
+pitch_length <- 105
+pitch_width <- 68
+```
+
+```{r}
+event_type = "SHOT"
+event_subtype = NA
+start_time = 29
+end_time = 0
+pred_time_event = 0
+
+dataset <- prepare_data(events, tracking, event_type, event_subtype, start_time, end_time, pred_time_event)
+
+dataset_sf <- dataset %>% st_as_sf(coords = c("x", "y"), crs = NA)
+```
+
+# Mesh
+
+```{r}
+mesh <- create_meshes(dataset, max.edge = c(3, 12),offset = c(5, 15), cutoff = 2)
+```
+
+```{r}
+plot(mesh$s)
+```
+
+# SPDE Prior
+
+```{r}
+spde <- inla.spde2.pcmatern(
+  mesh = mesh$s,
+  prior.sigma = c(1, 0.01),
+  prior.range = c(100, 0.99)
+)
+```
+
+# FIT
+
+```{r}
+cmp <- ~ Intercept(1) +
+  field(
+    geometry,
+    model = spde,
+    group = time_sec,
+    group_mapper = bru_mapper(mesh$t, indexed=TRUE),
+    control.group = list(model = "ar1")
+  )
+```
+
+
+```{r}
+ips <- fm_int(
+    domain = list(geometry = mesh$s, time_sec = mesh$t),
+    samplers = list(geometry = mesh$poly)
+  )
+
+fit <- bru(
+  cmp,
+  bru_obs(
+    geometry + time_sec ~ .,
+    family = "cp",
+    data = dataset_sf,
+    ips = ips
+  ),
+  options = list(verbose = TRUE)
+)
+
+```
+
+```{r}
+summary(fit)
+```
+
+```{r}
+# jpeg(here("output", "img", "lgcp", "model_marginals.jpg"), width = 800, height = 800, quality = 100)
+# 
+# par(mfrow = c(2, 2))
+# 
+# intercept_exp <- INLA::inla.tmarginal(exp, fit$marginals.fixed$Intercept)
+# plot(intercept_exp, type = "l", main = "Baseline Intensity (exp(Intercept))")
+# plot(fit$marginals.hyperpar$`Range for field`, type = "l", main = "Range")
+# plot(fit$marginals.hyperpar$`Stdev for field`, type = "l", main = "StDev")
+# plot(fit$marginals.hyperpar$`GroupRho for field`, type = "l", main = "ACF1")
+# 
+# dev.off()
+```
+
+```{r}
+ppxl <- fm_pixels(mesh$s, mask = mesh$poly, format = "sf")
+ppxl_all <- fm_cprod(ppxl, data.frame(time_sec = c(1, 5, 10, 15, 20, 25:30)))
+
+lambda1 <- predict(
+  fit,
+  ppxl_all,
+  ~ data.frame(time_sec = time_sec, lambda = exp(Intercept + field))
+)
+```
+
+```{r}
+lambda0 <- lambda1 %>% filter(time_sec %in% c(5, 10, 15, 20, 25, 30))
+
+plt_mean <- ggplot() +
+  gg(lambda0, geom = "tile", aes(fill = mean, color = mean)) +
+  facet_wrap(~time_sec) +
+  annotate_pitch(
+    dimensions = pitch_international,
+    fill       = NA,
+    colour     = "white",
+    alpha      = 0.6,  # Slightly increased for better contrast against magma
+    linewidth  = 0.5   # Ensure crisp, professional lines
+  ) +
+  scale_fill_viridis_c(
+    option = "magma",
+    na.value = "transparent",
+    name = "Intensity"
+  ) +
+  scale_color_viridis_c(
+    option = "magma",
+    na.value = "transparent",
+    guide = "none" # Prevents a duplicate legend from showing up
+  ) +
+  coord_fixed(
+    xlim = c(0, 105), 
+    ylim = c(0, 68), 
+    expand = FALSE 
+  ) +
+  annotate(
+    "segment",
+    x = 5, xend = 25, y = 4, yend = 4,
+    arrow = arrow(length = unit(0.2, "cm"), type = "closed"),
+    color = "white",
+    linewidth = 0.8,
+    alpha = 0.7
+  ) +
+  theme_minimal(base_family = "playfair", base_size = 12) +
+  theme(
+    plot.background  = element_rect(fill = "white", colour = NA),
+    panel.background = element_rect(fill = "#1A1A1A", colour = NA), # Dark background makes magma glow
+    panel.grid       = element_blank(),
+    panel.border     = element_rect(colour = "#DDDDDD", fill = NA, linewidth = 0.4),
+    axis.title = element_blank(), 
+    axis.text = element_blank(), 
+    axis.ticks = element_blank(),
+    plot.margin = margin(24, 28, 18, 28),
+    strip.background = element_rect(fill = "#F2F2F2", colour = "#DDDDDD", linewidth = 0.4),
+    strip.text       = element_text(
+      colour = "#111111", size = 12, face = "bold",
+      margin = margin(t = 8, b = 8)
+    )
+  )
+
+plt_mean
+ggsave(here("output" , "img", "lgcp", "temp_mean.pdf"), plot = plt_mean, width = 8, height = 4, dpi = 300)
+```
+
+```{r}
+lambda2 <- lambda1 %>% filter(time_sec %in% c(25:30))
+
+plt_mean2 <- ggplot() +
+  gg(lambda2, geom = "tile", aes(fill = mean, color = mean)) +
+  facet_wrap(~time_sec) +
+  annotate_pitch(
+    dimensions = pitch_international,
+    fill       = NA,
+    colour     = "white",
+    alpha      = 0.6,  # Slightly increased for better contrast against magma
+    linewidth  = 0.5   # Ensure crisp, professional lines
+  ) +
+  scale_fill_viridis_c(
+    option = "magma",
+    na.value = "transparent",
+    name = "Intensity"
+  ) +
+  scale_color_viridis_c(
+    option = "magma",
+    na.value = "transparent",
+    guide = "none" # Prevents a duplicate legend from showing up
+  ) +
+  coord_fixed(
+    xlim = c(0, 105), 
+    ylim = c(0, 68), 
+    expand = FALSE 
+  ) +
+  annotate(
+    "segment",
+    x = 5, xend = 25, y = 4, yend = 4,
+    arrow = arrow(length = unit(0.2, "cm"), type = "closed"),
+    color = "white",
+    linewidth = 0.8,
+    alpha = 0.7
+  ) +
+  theme_minimal(base_family = "playfair", base_size = 12) +
+  theme(
+    plot.background  = element_rect(fill = "white", colour = NA),
+    panel.background = element_rect(fill = "#1A1A1A", colour = NA), # Dark background makes magma glow
+    panel.grid       = element_blank(),
+    panel.border     = element_rect(colour = "#DDDDDD", fill = NA, linewidth = 0.4),
+    axis.title = element_blank(), 
+    axis.text = element_blank(), 
+    axis.ticks = element_blank(),
+    plot.margin = margin(24, 28, 18, 28),
+    strip.background = element_rect(fill = "#F2F2F2", colour = "#DDDDDD", linewidth = 0.4),
+    strip.text       = element_text(
+      colour = "#111111", size = 12, face = "bold",
+      margin = margin(t = 8, b = 8)
+    )
+  )
+
+plt_mean2
+ggsave(here("output" , "img", "lgcp", "temp_mean2.pdf"), plot = plt_mean2, width = 8, height = 4, dpi = 300)
+```
+
+```{r}
+lambda3 <- lambda1 %>% filter(time_sec %in% c(1, 5, 10, 15, 20, 25))
+
+plt_mean3 <- ggplot() +
+  gg(lambda3, geom = "tile", aes(fill = mean, color = mean)) +
+  facet_wrap(~time_sec) +
+  annotate_pitch(
+    dimensions = pitch_international,
+    fill       = NA,
+    colour     = "white",
+    alpha      = 0.6,  # Slightly increased for better contrast against magma
+    linewidth  = 0.5   # Ensure crisp, professional lines
+  ) +
+  scale_fill_viridis_c(
+    option = "magma",
+    na.value = "transparent",
+    name = "Intensity"
+  ) +
+  scale_color_viridis_c(
+    option = "magma",
+    na.value = "transparent",
+    guide = "none" # Prevents a duplicate legend from showing up
+  ) +
+  coord_fixed(
+    xlim = c(0, 105), 
+    ylim = c(0, 68), 
+    expand = FALSE 
+  ) +
+  annotate(
+    "segment",
+    x = 5, xend = 25, y = 4, yend = 4,
+    arrow = arrow(length = unit(0.2, "cm"), type = "closed"),
+    color = "white",
+    linewidth = 0.8,
+    alpha = 0.7
+  ) +
+  theme_minimal(base_family = "playfair", base_size = 12) +
+  theme(
+    plot.background  = element_rect(fill = "white", colour = NA),
+    panel.background = element_rect(fill = "#1A1A1A", colour = NA), # Dark background makes magma glow
+    panel.grid       = element_blank(),
+    panel.border     = element_rect(colour = "#DDDDDD", fill = NA, linewidth = 0.4),
+    axis.title = element_blank(), 
+    axis.text = element_blank(), 
+    axis.ticks = element_blank(),
+    plot.margin = margin(24, 28, 18, 28),
+    strip.background = element_rect(fill = "#F2F2F2", colour = "#DDDDDD", linewidth = 0.4),
+    strip.text       = element_text(
+      colour = "#111111", size = 12, face = "bold",
+      margin = margin(t = 8, b = 8)
+    )
+  )
+
+plt_mean3
+ggsave(here("output" , "img", "lgcp", "temp_mean3.pdf"), plot = plt_mean3, width = 8, height = 4, dpi = 300)
+```
+
+

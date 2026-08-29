@@ -1,0 +1,398 @@
+
+```{r}
+library(tidyverse)
+library(here)
+library(readr)
+
+library(INLA)
+library(INLAspacetime)
+library(inlabru)
+library(fmesher)
+library(sp)
+library(sf)
+
+
+source(here('src', 'plots.R'))
+source(here('src', 'helpers.R'))
+source(here('src', 'modeling.R'))
+```
+
+# Data
+
+```{r}
+events <- read_csv(here('data', 'events_dfl.csv')) %>% 
+  distinct() %>% 
+  rename(team_with_poss = team_id)
+
+tracking <- read_csv(here('data', 'tracking_dfl_secs.csv')) %>%
+  distinct() %>% 
+  own_goal_direction() %>% 
+  filter(is_goalkeeper == 0)
+
+ball <- tracking %>% 
+  filter(player_id == 'ball') %>% 
+  select(period, time_sec_orig = time_seg, x_ball = x_pitch, y_ball = y_pitch, match_id)
+
+pitch_length <- 105
+pitch_width <- 68
+```
+
+```{r}
+event_type = "SHOT"
+event_subtype = NA
+start_time = 29
+end_time = 0
+pred_time_event = 0
+
+dataset <- prepare_data(events, tracking, event_type, event_subtype, start_time, end_time, pred_time_event)
+
+dataset_sf <- dataset %>% st_as_sf(coords = c("x", "y"), crs = NA)
+```
+
+
+# Mesh
+
+```{r}
+mesh <- create_meshes(dataset, max.edge = c(3, 12),offset = c(5, 15), cutoff = 2)
+```
+
+```{r}
+plot(mesh$s)
+```
+
+# SPDE Prior
+
+```{r}
+spde <- inla.spde2.pcmatern(
+  mesh = mesh$s,
+  prior.sigma = c(1, 0.01),
+  prior.range = c(100, 0.99)
+)
+```
+
+# FIT
+
+```{r}
+cmp <- ~ Intercept(1) +
+  Common(
+    geometry,
+    model = spde,
+    group = time_sec,
+    group_mapper = bru_mapper(mesh$t, indexed=TRUE),
+    control.group = list(model = "ar1")
+  ) +
+  Difference(
+    geometry,
+    model = spde,
+    group = time_sec,
+    group_mapper = bru_mapper(mesh$t, indexed=TRUE),
+    control.group = list(model = "ar1")
+  )
+
+fml.atk <- geometry ~ Intercept + Common + Difference / 2
+fml.def <- geometry ~ Intercept + Common - Difference / 2
+```
+
+
+```{r}
+ips <- fm_int(
+    domain = list(geometry = mesh$s, time_sec = mesh$t),
+    samplers = list(geometry = mesh$poly)
+  )
+
+lik_atk <- bru_obs("cp",
+  formula = fml.atk,
+  data = dataset_sf[dataset_sf$team_code == "Attack", ],
+  ips = ips
+)
+lik_def <- bru_obs("cp",
+  formula = fml.def,
+  data = dataset_sf[dataset_sf$team_code == "Defense", ],
+  ips = ips
+)
+
+fit <- bru(
+  cmp,
+  lik_atk,
+  lik_def,
+  options = list(verbose = TRUE)
+)
+```
+
+```{r}
+summary(fit)
+```
+
+```{r}
+# jpeg(here("output", "img", "lgcp", "model_marginals.jpg"), width = 800, height = 800, quality = 100)
+# 
+# par(mfrow = c(3, 2))
+# 
+# intercept_exp <- INLA::inla.tmarginal(exp, fit$marginals.fixed$Intercept)
+# plot(intercept_exp, type = "l", main = "Baseline Intensity (exp(Intercept))")
+# plot(fit$marginals.hyperpar$`Range for Common`, type = "l", main = "Range Common")
+# plot(fit$marginals.hyperpar$`Stdev for Common`, type = "l", main = "StDev Common")
+# plot(fit$marginals.hyperpar$`Range for Difference`, type = "l", main = "Range Diff")
+# plot(fit$marginals.hyperpar$`Stdev for Difference`, type = "l", main = "StDev Diff")
+# 
+# dev.off()
+```
+
+```{r}
+ppxl <- fm_pixels(mesh$s, mask = mesh$poly, format = "sf")
+pred_grid <- fm_cprod(ppxl, data.frame(time_sec = c(25:30)))
+
+# Predict Attack Intensity
+pred_atk <- predict(
+  fit,
+  newdata = pred_grid,
+  formula = ~ exp(Intercept + Common + Difference / 2)
+)
+
+# Predict Defense Intensity
+pred_def <- predict(
+  fit,
+  newdata = pred_grid,
+  formula = ~ exp(Intercept + Common - Difference / 2)
+)
+
+# # Predict the Common spatial field
+# pred_common <- predict(
+#   fit,
+#   newdata = pred_grid,
+#   formula = ~ Common
+# )
+# 
+# # Predict the Difference spatial field
+# pred_diff <- predict(
+#   fit,
+#   newdata = pred_grid,
+#   formula = ~ Difference
+# )
+```
+
+```{r}
+pred_atk <- pred_atk %>% mutate(Phase = "Attack")
+pred_def <- pred_def %>% mutate(Phase = "Defense")
+pred_combined <- bind_rows(pred_atk, pred_def) %>% select(-q0.5)
+
+pred_long <- pred_combined %>%
+  pivot_longer(
+    cols = c(q0.025, mean, q0.975),
+    names_to = "Metric",
+    values_to = "Value"
+  ) %>%
+  # Convert Metric to a factor to control the order of the facets
+  mutate(
+    Metric = factor(
+      Metric, 
+      levels = c("q0.025", "mean", "q0.975"),
+      labels = c("2.5% Quantile", "Mean", "97.5% Quantile")
+    )
+  ) %>% 
+  filter(Metric == "Mean")
+
+
+plt_combined <- ggplot() +
+  gg(pred_long, geom = "tile", aes(fill = Value, color = Value)) +
+  annotate_pitch(
+    dimensions = pitch_international,
+    fill       = NA,
+    colour     = "white",
+    alpha      = 0.6,  
+    linewidth  = 0.5   
+  ) +
+  facet_wrap(Phase ~ time_sec, ncol = 3) +
+  scale_fill_viridis_c(
+    option = "magma",
+    na.value = "transparent",
+    name = "Intensity"
+  ) +
+  scale_color_viridis_c(
+    option = "magma",
+    na.value = "transparent",
+    guide = "none" 
+  ) +
+  coord_fixed(
+    xlim = c(0, 105), 
+    ylim = c(0, 68), 
+    expand = FALSE 
+  ) +
+  annotate(
+    "segment",
+    x = 5, xend = 25, y = 4, yend = 4,
+    arrow = arrow(length = unit(0.2, "cm"), type = "closed"),
+    color = "white",
+    linewidth = 0.8,
+    alpha = 0.7
+  ) +
+  theme_minimal(base_family = "playfair", base_size = 12) +
+  theme(
+    plot.background  = element_rect(fill = "white", colour = NA),
+    panel.background = element_rect(fill = "#1A1A1A", colour = NA), 
+    panel.grid       = element_blank(),
+    panel.border     = element_rect(colour = "#DDDDDD", fill = NA, linewidth = 0.4),
+    axis.title       = element_blank(), 
+    axis.text        = element_blank(), 
+    axis.ticks       = element_blank(),
+    plot.margin      = margin(24, 28, 18, 28),
+    strip.background = element_rect(fill = "#F2F2F2", colour = "#DDDDDD", linewidth = 0.4),
+
+    # Top facet labels (Quantiles / Mean)
+    strip.text.x = element_text(
+      colour = "#111111", 
+      size = 12, 
+      face = "bold",
+      margin = margin(t = 8, b = 8)
+    ),
+
+    # Side facet labels (Attack / Defense)
+    strip.text.y = element_text(
+      colour = "#111111", 
+      size = 16,           # Increased size for the side text
+      face = "bold",
+      margin = margin(l = 8, r = 8) # Use left/right margin for vertical text padding
+    )
+  )
+
+plt_combined
+ggsave(here("output" , "img", "lgcp", "temp_team_atk_def3.pdf"), plot = plt_combined, width = 8, height = 9, dpi = 300)
+```
+
+
+```{r}
+plt_common <- ggplot() +
+  gg(pred_common %>% filter(time_sec != 0), geom = "tile", aes(fill = mean, color = mean)) +
+  coord_sf() + 
+  annotate_pitch(
+    dimensions = pitch_international,
+    fill       = NA,
+    colour     = "white",
+    alpha      = 0.3
+  ) +
+  facet_wrap(~ time_sec) +
+  coord_fixed(
+    xlim = c(0, 105), 
+    ylim = c(0, 68), 
+    expand = FALSE 
+  ) +
+  scale_fill_viridis_c(option = "magma", name = "Common") +
+  scale_color_viridis_c(
+    option = "magma",
+    na.value = "transparent",
+    guide = "none" # Prevents a duplicate legend from showing up
+  ) +
+  annotate(
+    "segment",
+    x = 5, xend = 25, y = 3, yend = 3,
+    arrow = arrow(length = unit(0.2, "cm"), type = "closed"),
+    color = "white",
+    linewidth = 0.8,
+    alpha = 0.7
+  ) +
+  theme_minimal(base_family = "playfair", base_size = 12) +
+  theme(
+    plot.background  = element_rect(fill = "white", colour = NA),
+    panel.background = element_rect(fill = "#1A1A1A", colour = NA), 
+    panel.grid       = element_blank(),
+    panel.border     = element_rect(colour = "#DDDDDD", fill = NA, linewidth = 0.4),
+    axis.title       = element_blank(), 
+    axis.text        = element_blank(), 
+    axis.ticks       = element_blank(),
+    plot.margin      = margin(24, 28, 18, 28),
+    strip.background = element_rect(fill = "#F2F2F2", colour = "#DDDDDD", linewidth = 0.4),
+
+    # Top facet labels (Quantiles / Mean)
+    strip.text.x = element_text(
+      colour = "#111111", 
+      size = 12, 
+      face = "bold",
+      margin = margin(t = 8, b = 8)
+    ),
+
+    # Side facet labels (Attack / Defense)
+    strip.text.y = element_text(
+      colour = "#111111", 
+      size = 16,           # Increased size for the side text
+      face = "bold",
+      margin = margin(l = 8, r = 8) # Use left/right margin for vertical text padding
+    )
+  )
+
+library(scales) # Required for scales::squish
+
+plt_diff <- ggplot() +
+  gg(pred_diff %>% filter(time_sec != 0), geom = "tile", aes(fill = mean, color = mean)) +
+  annotate_pitch(
+    dimensions = pitch_international,
+    fill       = NA,
+    colour     = "gray50", 
+    alpha      = 0.5
+  ) +
+  coord_fixed(
+    xlim = c(0, 105), 
+    ylim = c(0, 68), 
+    expand = FALSE 
+  ) +
+  facet_wrap(~ time_sec) +
+  scale_fill_gradient2(
+    low      = "blue", 
+    mid      = "white", 
+    high     = "red", 
+    midpoint = 0, 
+    limits   = c(-2, 2),       # Forces the legend scale to be exactly -1.5 to 1.5
+    oob      = scales::squish,     # Caps extreme values at red/blue instead of turning them NA
+    name     = "Difference"
+  ) +
+  scale_colour_gradient2(
+    low      = "blue", 
+    mid      = "white", 
+    high     = "red", 
+    midpoint = 0, 
+    limits   = c(-2, 2),        
+    oob      = scales::squish,
+    name     = "Difference"     # <-- Match the name from scale_fill_gradient2
+  ) +
+  annotate(
+    "segment",
+    x = 5, xend = 25, y = 3, yend = 3,
+    arrow = arrow(length = unit(0.2, "cm"), type = "closed"),
+    color = "black",
+    linewidth = 0.8,
+    alpha = 0.7
+  ) +
+  theme_minimal(base_family = "playfair", base_size = 12) +
+  theme(
+    plot.background  = element_rect(fill = "white", colour = NA),
+    panel.background = element_rect(fill = "#1A1A1A", colour = NA), 
+    panel.grid       = element_blank(),
+    panel.border     = element_rect(colour = "#DDDDDD", fill = NA, linewidth = 0.4),
+    axis.title       = element_blank(), 
+    axis.text        = element_blank(), 
+    axis.ticks       = element_blank(),
+    plot.margin      = margin(24, 28, 18, 28),
+    strip.background = element_rect(fill = "#F2F2F2", colour = "#DDDDDD", linewidth = 0.4),
+
+    # Top facet labels (Quantiles / Mean)
+    strip.text.x = element_text(
+      colour = "#111111", 
+      size = 12, 
+      face = "bold",
+      margin = margin(t = 8, b = 8)
+    ),
+
+    # Side facet labels (Attack / Defense)
+    strip.text.y = element_text(
+      colour = "#111111", 
+      size = 16,           
+      face = "bold",
+      margin = margin(l = 8, r = 8) 
+    )
+  )
+
+plt_common
+plt_diff
+ggsave(here("output" , "img", "lgcp", "temp_team_common.pdf"), plot = plt_common, width = 9, height = 5, dpi = 300)
+ggsave(here("output" , "img", "lgcp", "temp_team_dif.pdf"), plot = plt_diff, width = 9, height = 5, dpi = 300)
+```
+

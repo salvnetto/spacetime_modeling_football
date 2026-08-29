@@ -1,0 +1,249 @@
+
+```{r}
+library(tidyverse)
+library(here)
+library(readr)
+library(INLA)
+library(fmesher)
+library(sf)
+library(inlabru)
+
+source(here('src', 'plots.R'))
+source(here('src', 'helpers.R'))
+```
+
+```{r}
+events <- read_csv(here('data', 'events_dfl.csv')) %>% 
+  distinct() %>% 
+  rename(team_with_poss = team_id)
+
+tracking <- read_csv(here('data', 'tracking_dfl_secs.csv')) %>%
+  distinct() %>% 
+  own_goal_direction()
+
+
+pitch_length <- 105
+pitch_width <- 68
+```
+
+```{r}
+shots <- events %>%
+  filter(type == "SHOT", is.na(subtype)) %>% 
+  distinct() %>% 
+  mutate(
+    shot_time = round(start_time_s),
+    start_window = shot_time - 40,
+    end_window   = shot_time
+  ) %>% 
+  select(match_id, period, start_window, end_window, team_with_poss, success) %>% 
+  filter(success %in% 'TRUE') %>% 
+  slice(1)
+
+setDT(tracking)
+setDT(shots)
+
+tracking <- tracking[, time_seg_original := time_seg]
+tracking_inla <- tracking[shots,
+  on = .(
+    match_id,
+    period,
+    time_seg >= start_window,
+    time_seg <= end_window
+  ),
+  nomatch = 0
+] %>%
+  distinct() %>% 
+  filter(player_id != 'ball', !is.na(x_pitch)) %>% 
+  select(-time_seg, -time_seg.1) %>% 
+  rename(time_seg = time_seg_original)
+```
+
+```{r}
+# T MESH
+interval <- 5
+t_start <- floor(min(tracking_inla$time_seg) / interval) * interval
+t_end   <- ceiling(max(tracking_inla$time_seg) / interval) * interval
+
+tknots <- seq(from = t_start, to = t_end, by = interval)
+
+tracking_inla <- tracking_inla %>% 
+  filter(time_seg %in% tknots)
+```
+
+```{r}
+tracking_sf <- st_as_sf(tracking_inla, coords = c("x_pitch", "y_pitch"))
+tracking_sf$time_idx <- as.numeric(as.factor(tracking_sf$time_seg))
+```
+
+```{r}
+pitch_x <- c(0, 105)
+pitch_y <- c(0, 68)
+
+pitch_boundary <- matrix(c(
+  pitch_x[1], pitch_y[1],
+  pitch_x[2], pitch_y[1],
+  pitch_x[2], pitch_y[2],
+  pitch_x[1], pitch_y[2],
+  pitch_x[1], pitch_y[1]
+), ncol = 2, byrow = TRUE)
+
+boundary <- fm_segm(pitch_boundary)
+
+mesh <- fm_mesh_2d_inla(
+  boundary = boundary,
+  max.edge = c(3, 10),   
+  offset = c(2, 15),
+  cutoff = 1      
+)
+
+pitch_poly <- st_polygon(list(as.matrix(pitch_boundary))) %>% st_sfc()
+pitch_poly <- st_sf(geometry = pitch_poly)
+```
+
+```{r}
+plot(mesh)
+lines(pitch_boundary, col="red", lwd=2)
+```
+
+```{r}
+spde <- inla.spde2.matern(mesh = mesh, alpha = 2)
+```
+
+```{r}
+n_time <- length(unique(tracking_sf$time_idx))
+
+cmp <- geometry + time_idx ~ field(
+  main = geometry, 
+  model = spde, 
+  group = time_idx, 
+  control.group = list(model = "ar1")
+) + Intercept(1)
+
+fit <- lgcp(
+  components = cmp,
+  data = tracking_sf,
+  samplers = pitch_poly,
+  domain = list(
+    geometry = mesh, 
+    time_idx = seq_len(n_time)
+  )
+)
+```
+
+```{r}
+pixels <- fm_pixels(mesh, mask = pitch_poly)
+time_steps <- seq_len(n_time)
+
+grid_st <- do.call(
+  rbind, 
+  lapply(time_steps, function(t) {
+    p <- pixels
+    p$time_idx <- t
+    p
+  })
+)
+
+lambda_pred <- predict(
+  fit, 
+  grid_st, 
+  ~ exp(field + Intercept),
+  n.samples = 100
+)
+```
+
+```{r}
+lambda_df <- lambda_pred %>%
+  mutate(
+    x = st_coordinates(.)[, 1],
+    y = st_coordinates(.)[, 2]
+  ) %>%
+  as.data.frame() 
+
+ggplot(lambda_df) +
+  geom_tile(aes(x = x, y = y, fill = mean)) +
+  annotate_pitch(
+    dimensions = pitch_international,
+    fill       = NA,
+    colour     = "#C8C8C8",
+    limits     = FALSE
+  ) + 
+  scale_fill_viridis_c(option = "magma") +
+  coord_fixed() +
+  theme_minimal() +
+  facet_wrap(~time_idx)
+```
+
+```{r}
+pixels <- fm_pixels(mesh, mask = pitch_poly)
+target_time <- n_time + n_forecast # This is time_idx 4
+
+# Create the grid for the forecasted time step
+grid_forecast <- pixels
+grid_forecast$time_idx <- target_time
+
+# Run the prediction
+lambda_pred_future <- predict(
+  fit, 
+  grid_forecast, 
+  ~ exp(field + Intercept),
+  n.samples = 100 
+)
+
+# Extract coordinates from the sf POINT object
+lambda_df_future <- lambda_pred_future %>%
+  mutate(
+    x = st_coordinates(.)[, 1],
+    y = st_coordinates(.)[, 2]
+  ) %>%
+  as.data.frame() 
+
+ggplot(lambda_df_future) +
+  geom_tile(aes(x = x, y = y, fill = mean)) +
+  annotate_pitch(
+    dimensions = pitch_international,
+    fill       = NA,
+    colour     = "#C8C8C8",
+    limits     = FALSE
+  ) + 
+  scale_fill_viridis_c(option = "magma", name = "Intensity\n(pts/m²)") +
+  coord_fixed() +
+  theme_minimal() +
+  labs(
+    title = paste("Forecasted Spatio-Temporal Intensity: Time Step", target_time),
+    subtitle = "Units: Expected number of points per square meter"
+  )
+```
+
+```{r}
+all_time_segs <- tracking %>% 
+  filter(!is.na(x_pitch)) %>% 
+  pull(time_seg) %>% 
+  unique()
+
+true_time_seg_4 <- all_time_segs[8]
+
+true_points_4 <- tracking %>% 
+  filter(time_seg == true_time_seg_4, !is.na(x_pitch)) %>% 
+  slice(1:22)
+
+ggplot(lambda_df_future) +
+  geom_tile(aes(x = x, y = y, fill = mean)) +
+  geom_point(
+    data = true_points_4, 
+    aes(x = x_pitch, y = y_pitch), 
+    color = "cyan", 
+    size = 2.5, 
+    shape = 16,
+    alpha = 0.8
+  ) +
+  annotate_pitch(
+    dimensions = pitch_international,
+    fill       = NA,
+    colour     = "#C8C8C8",
+    limits     = FALSE
+  ) + 
+  scale_fill_viridis_c(option = "magma", name = "Intensity\n(pts/m²)") +
+  coord_fixed() +
+  theme_minimal()
+```
+

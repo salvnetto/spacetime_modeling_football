@@ -22,3 +22,13 @@
 # OS files
 .DS_Store
 Thumbs.db
+.positai
+
+
+logos/
+backup/
+dgruyter.xdy
+dgruyter.sty
+main.tex
+dgruyter.ist
+references.bib

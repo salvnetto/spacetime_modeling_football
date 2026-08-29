@@ -1,0 +1,104 @@
+
+```{r}
+library(tidyverse)
+library(here)
+library(readr)
+library(INLA)
+library(fmesher)
+library(sf)
+library(inlabru)
+
+source(here('src', 'plots.R'))
+source(here('src', 'helpers.R'))
+```
+
+```{r}
+events <- read_csv(here('data', 'events_dfl.csv')) %>% 
+  distinct() %>% 
+  rename(team_with_poss = team_id)
+
+tracking <- read_csv(here('data', 'tracking_dfl_secs.csv')) %>%
+  distinct() %>% 
+  own_goal_direction()
+
+
+pitch_length <- 105
+pitch_width <- 68
+```
+
+```{r}
+tracking_inla <- tracking %>% 
+  filter(time_seg %% 5 == 0) %>% 
+  filter(!is.na(x_pitch)) %>% 
+  slice(1:66)
+```
+
+```{r}
+tracking_sf <- st_as_sf(tracking_inla, coords = c("x_pitch", "y_pitch"))
+```
+
+```{r}
+pitch_x <- c(0, 105)
+pitch_y <- c(0, 68)
+
+pitch_boundary <- matrix(c(
+  pitch_x[1], pitch_y[1],
+  pitch_x[2], pitch_y[1],
+  pitch_x[2], pitch_y[2],
+  pitch_x[1], pitch_y[2],
+  pitch_x[1], pitch_y[1]
+), ncol = 2, byrow = TRUE)
+
+boundary <- fm_segm(pitch_boundary)
+
+mesh <- fm_mesh_2d_inla(
+  boundary = boundary,
+  max.edge = c(3, 10),   
+  offset = c(2, 15),
+  cutoff = 1      
+)
+
+pitch_poly <- st_polygon(list(as.matrix(pitch_boundary))) %>% st_sfc()
+pitch_poly <- st_sf(geometry = pitch_poly)
+```
+
+```{r}
+plot(mesh)
+lines(pitch_boundary, col="red", lwd=2)
+```
+
+```{r}
+spde <- inla.spde2.matern(mesh = mesh, alpha = 2)
+```
+
+```{r}
+cmp <- geometry ~ mySmooth(geometry, model = spde) + Intercept(1)
+
+fit <- lgcp(
+  cmp,
+  data = tracking_sf,
+  samplers = pitch_poly,
+  domain = list(geometry = mesh)
+)
+```
+
+```{r}
+lambda_pred <- predict(
+  fit, 
+  fm_pixels(mesh, mask = pitch_poly), 
+  ~ exp(mySmooth + Intercept)
+)
+
+ggplot() +
+  gg(lambda_pred, geom = "tile") +
+  geom_sf(data = pitch_poly, alpha = 0) +
+    annotate_pitch(
+      dimensions = pitch_international,
+      fill       = NA,
+      colour     = "#C8C8C8",
+      limits     = FALSE
+    ) + 
+  scale_fill_viridis_c(option = "magma") +
+  theme_minimal()
+```
+
