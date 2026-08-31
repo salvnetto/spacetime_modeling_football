@@ -79,8 +79,8 @@ def parse_and_write_csv(xml_files, csv_path):
     print(f"Database created successfully at {csv_path}")
 
 if __name__ == '__main__':
-    base_dir = r"c:\Users\salvv\OneDrive\Documentos\TCC\data\dfl\raw"
-    csv_path = r"c:\Users\salvv\OneDrive\Documentos\TCC\data\dfl\players_database.csv"
+    base_dir = r"data/raw"
+    csv_path = r"data/processed/players_database.csv"
     
     # Find all the DFL match information XMLs
     xml_files = glob.glob(os.path.join(base_dir, "*matchinformation*.xml"))

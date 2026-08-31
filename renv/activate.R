@@ -1,54 +1,845 @@
-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 request-method GET request-Accept-Encoding gzip, deflate, br, zstd response-head HTTP/3 200 
-content-length: 7285
-cache-control: public, max-age=31536000, immutable
-content-type: application/javascript
-content-md5: +kHYxfHxHHVQQMBxo4MTvw==
-last-modified: Wed, 26 Aug 2026 17:54:51 GMT
-etag: "0x8DF039B20C8B3DE"
-server: Windows-Azure-Web/1.0 Microsoft-HTTPAPI/2.0
-content-encoding: br
-via: 1.1 varnish, 1.1 varnish
-accept-ranges: bytes
-date: Wed, 26 Aug 2026 18:50:58 GMT
-age: 2648
-x-served-by: cache-iad-kjyo7100096-IAD, cache-gru-sbsp2090046-GRU
-x-cache: HIT, HIT
-x-cache-hits: 29, 20
-vary: Accept-Encoding
-cross-origin-resource-policy: cross-origin
-access-control-allow-origin: *
-strict-transport-security: max-age=31536000
-timing-allow-origin: *
-x-fastly-request-id: e2e384dda246f7920b81eca54fb43a7491ba51e9
-alt-svc: h3=":443";ma=86400,h3-29=":443";ma=86400,h3-27=":443";ma=86400
-X-Firefox-Http3: h3
- original-response-headers content-length: 7285
-cache-control: public, max-age=31536000, immutable
-content-type: application/javascript
-content-md5: +kHYxfHxHHVQQMBxo4MTvw==
-last-modified: Wed, 26 Aug 2026 17:54:51 GMT
-etag: "0x8DF039B20C8B3DE"
-server: Windows-Azure-Web/1.0 Microsoft-HTTPAPI/2.0
-content-encoding: br
-via: 1.1 varnish, 1.1 varnish
-accept-ranges: bytes
-date: Wed, 26 Aug 2026 18:50:58 GMT
-age: 2648
-x-served-by: cache-iad-kjyo7100096-IAD, cache-gru-sbsp2090046-GRU
-x-cache: HIT, HIT
-x-cache-hits: 29, 20
-vary: Accept-Encoding
-cross-origin-resource-policy: cross-origin
-access-control-allow-origin: *
-strict-transport-security: max-age=31536000
-timing-allow-origin: *
-x-fastly-request-id: e2e384dda246f7920b81eca54fb43a7491ba51e9
-alt-svc: h3=":443";ma=86400,h3-29=":443";ma=86400,h3-27=":443";ma=86400
- ctid 2 net-response-time-onstart 88 net-response-time-onstop 124      u                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   ¢     ‰PNG
-
-   IHDR         óÿa  iIDAT8O}“;hQ†Ï¹3“ìˆÉÎãîn”Ä`#Æ¤P0‚!¤UQK‰AŒ¶Úˆ­…••Xˆ ØXiL
-ÖAHĞÑìÜ™YÍcç>änf–(K¾fÎã?ÿÜ3ÌEøÇqFLÓ<‹ˆcJ©]º†ˆËJ©wœóçµZm&×j°Ôu¦y¾UiƒàüIE:Ôyn`ø¾?k2œåÛÂ¥œcŒÓ&MêºOÓO9ŸáB\M’äx±X·,‹ë¾AHÿ¯••¶mÏÚ…Â-Ë4GçÏ‚(:‡ç±cNS!¦Â0¼ ;@Àêæ;›ù Pçİ³ãR¦Fêºó½;
-…ÃKKK_²¡¶ôöö¦ïu¬¿V*•r¯²‘r¾?ãÅ\ÜÇqú;;:æA©N d+åò(UJı‚ ¿¥ÜJéwq ®kƒUPÊJÅAxÙîÛA¨ïG!İ€¸†¥Ri ìÓ.åiÆØë\ÙJé	ñ%À7mğ ”º0&œîn„ŒFQô1ØÊî®®£Ü¶_¢R=:O…¸¯†ë¯q=n âoDÔk¬93†á'-¤”†aø¢äû4ójÒàüàæDé”8Ùà|€2$¥¼(¥œˆãxA÷ûúúÕëõÏ–•6»Z­^iİÏu?B„”CƒƒƒÉôôt-ï@W¥\ş	JíĞ‰àüUEgt¼õ2é“Ü¥& ;  ËY«§R*5cÎùME×³ú¿ßu¯!§Ò4=™$I¨kÅbÑµy¤yË»›kõó/%gE¾d\=    IEND®B`‚                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        ",
+
+local({
+
+  # the requested version of renv
+  version <- "1.1.8"
+  attr(version, "md5") <- "cbffd086c66739a0fdaac7a30b4aa65c"
+  attr(version, "sha") <- NULL
+
+  # the project directory
+  project <- Sys.getenv("RENV_PROJECT")
+  if (!nzchar(project))
+    project <- getwd()
+
+  # use start-up diagnostics if enabled
+  diagnostics <- Sys.getenv("RENV_STARTUP_DIAGNOSTICS", unset = "FALSE")
+  if (diagnostics) {
+    start <- Sys.time()
+    profile <- tempfile("renv-startup-", fileext = ".Rprof")
+    utils::Rprof(profile)
+    on.exit({
+      utils::Rprof(NULL)
+      elapsed <- signif(difftime(Sys.time(), start, units = "auto"), digits = 2L)
+      writeLines(sprintf("- renv took %s to run the autoloader.", format(elapsed)))
+      writeLines(sprintf("- Profile: %s", profile))
+      print(utils::summaryRprof(profile))
+    }, add = TRUE)
+  }
+
+  # figure out whether the autoloader is enabled
+  enabled <- local({
+
+    # first, check config option
+    override <- getOption("renv.config.autoloader.enabled")
+    if (!is.null(override))
+      return(override)
+
+    # if we're being run in a context where R_LIBS is already set,
+    # don't load -- presumably we're being run as a sub-process and
+    # the parent process has already set up library paths for us
+    rcmd <- Sys.getenv("R_CMD", unset = NA)
+    rlibs <- Sys.getenv("R_LIBS", unset = NA)
+    if (!is.na(rlibs) && !is.na(rcmd))
+      return(FALSE)
+
+    # next, check environment variables
+    # prefer using the configuration one in the future
+    envvars <- c(
+      "RENV_CONFIG_AUTOLOADER_ENABLED",
+      "RENV_AUTOLOADER_ENABLED",
+      "RENV_ACTIVATE_PROJECT"
+    )
+
+    for (envvar in envvars) {
+      envval <- Sys.getenv(envvar, unset = NA)
+      if (!is.na(envval))
+        return(tolower(envval) %in% c("true", "t", "1"))
+    }
+
+    # enable by default
+    TRUE
+
+  })
+
+  # bail if we're not enabled
+  if (!enabled) {
+
+    # if we're not enabled, we might still need to manually load
+    # the user profile here
+    profile <- Sys.getenv("R_PROFILE_USER", unset = "~/.Rprofile")
+    if (file.exists(profile)) {
+      cfg <- Sys.getenv("RENV_CONFIG_USER_PROFILE", unset = "TRUE")
+      if (tolower(cfg) %in% c("true", "t", "1"))
+        sys.source(profile, envir = globalenv())
+    }
+
+    return(FALSE)
+
+  }
+
+  # avoid recursion
+  if (identical(getOption("renv.autoloader.running"), TRUE)) {
+    warning("ignoring recursive attempt to run renv autoloader")
+    return(invisible(TRUE))
+  }
+
+  # signal that we're loading renv during R startup
+  options(renv.autoloader.running = TRUE)
+  on.exit(options(renv.autoloader.running = NULL), add = TRUE)
+
+  # signal that we've consented to use renv
+  options(renv.consent = TRUE)
+
+  # load the 'utils' package eagerly -- this ensures that renv shims, which
+  # mask 'utils' packages, will come first on the search path
+  library(utils, lib.loc = .Library)
+
+  # unload renv if it's already been loaded
+  if ("renv" %in% loadedNamespaces())
+    unloadNamespace("renv")
+
+  # load bootstrap tools   
+  ansify <- function(text) {
+    if (renv_ansify_enabled())
+      renv_ansify_enhanced(text)
+    else
+      renv_ansify_default(text)
+  }
+  
+  renv_ansify_enabled <- function() {
+  
+    override <- Sys.getenv("RENV_ANSIFY_ENABLED", unset = NA)
+    if (!is.na(override))
+      return(as.logical(override))
+  
+    pane <- Sys.getenv("RSTUDIO_CHILD_PROCESS_PANE", unset = NA)
+    if (identical(pane, "build"))
+      return(FALSE)
+  
+    testthat <- Sys.getenv("TESTTHAT", unset = "false")
+    if (tolower(testthat) %in% "true")
+      return(FALSE)
+  
+    iderun <- Sys.getenv("R_CLI_HAS_HYPERLINK_IDE_RUN", unset = "false")
+    if (tolower(iderun) %in% "false")
+      return(FALSE)
+  
+    TRUE
+  
+  }
+  
+  renv_ansify_default <- function(text) {
+    text
+  }
+  
+  renv_ansify_enhanced <- function(text) {
+  
+    # R help links
+    pattern <- "`\\?(renv::(?:[^`])+)`"
+    replacement <- "`\033]8;;x-r-help:\\1\a?\\1\033]8;;\a`"
+    text <- gsub(pattern, replacement, text, perl = TRUE)
+  
+    # runnable code
+    pattern <- "`(renv::(?:[^`])+)`"
+    replacement <- "`\033]8;;x-r-run:\\1\a\\1\033]8;;\a`"
+    text <- gsub(pattern, replacement, text, perl = TRUE)
+  
+    # return ansified text
+    text
+  
+  }
+  
+  renv_ansify_init <- function() {
+  
+    envir <- renv_envir_self()
+    if (renv_ansify_enabled())
+      assign("ansify", renv_ansify_enhanced, envir = envir)
+    else
+      assign("ansify", renv_ansify_default, envir = envir)
+  
+  }
+  
+  `%||%` <- function(x, y) {
+    if (is.null(x)) y else x
+  }
+  
+  catf <- function(fmt, ..., appendLF = TRUE) {
+  
+    quiet <- getOption("renv.bootstrap.quiet", default = FALSE)
+    if (quiet)
+      return(invisible())
+  
+    # also check for config environment variables that should suppress messages
+    # https://github.com/rstudio/renv/issues/2214
+    enabled <- Sys.getenv("RENV_CONFIG_STARTUP_QUIET", unset = NA)
+    if (!is.na(enabled) && tolower(enabled) %in% c("true", "1"))
+      return(invisible())
+  
+    enabled <- Sys.getenv("RENV_CONFIG_SYNCHRONIZED_CHECK", unset = NA)
+    if (!is.na(enabled) && tolower(enabled) %in% c("false", "0"))
+      return(invisible())
+  
+    msg <- sprintf(fmt, ...)
+    cat(msg, file = stdout(), sep = if (appendLF) "\n" else "")
+  
+    invisible(msg)
+  
+  }
+  
+  header <- function(label,
+                     ...,
+                     prefix = "#",
+                     suffix = "-",
+                     n = min(getOption("width"), 78))
+  {
+    label <- sprintf(label, ...)
+    n <- max(n - nchar(label) - nchar(prefix) - 2L, 8L)
+    if (n <= 0)
+      return(paste(prefix, label))
+  
+    tail <- paste(rep.int(suffix, n), collapse = "")
+    paste0(prefix, " ", label, " ", tail)
+  
+  }
+  
+  heredoc <- function(text, leave = 0) {
+  
+    # remove leading, trailing whitespace
+    trimmed <- gsub("^\\s*\\n|\\n\\s*$", "", text)
+  
+    # split into lines
+    lines <- strsplit(trimmed, "\n", fixed = TRUE)[[1L]]
+  
+    # compute common indent
+    indent <- regexpr("[^[:space:]]", lines)
+    common <- min(setdiff(indent, -1L)) - leave
+    text <- paste(substring(lines, common), collapse = "\n")
+  
+    # substitute in ANSI links for executable renv code
+    ansify(text)
+  
+  }
+  
+  bootstrap <- function(version, library) {
+  
+    friendly <- renv_bootstrap_version_friendly(version)
+    section <- header(sprintf("Bootstrapping renv %s", friendly))
+    catf(section)
+  
+    # try to install renv from cache
+    md5 <- attr(version, "md5", exact = TRUE)
+    if (length(md5)) {
+      pkgpath <- renv_bootstrap_find(version)
+      if (length(pkgpath) && file.exists(pkgpath)) {
+        file.copy(pkgpath, library, recursive = TRUE)
+        return(invisible())
+      }
+    }
+  
+    # attempt to download renv
+    catf("- Downloading renv ... ", appendLF = FALSE)
+    withCallingHandlers(
+      tarball <- renv_bootstrap_download(version),
+      error = function(err) {
+        catf("FAILED")
+        stop("failed to download:\n", conditionMessage(err))
+      }
+    )
+    catf("OK")
+    on.exit(unlink(tarball), add = TRUE)
+  
+    # now attempt to install
+    catf("- Installing renv  ... ", appendLF = FALSE)
+    withCallingHandlers(
+      status <- renv_bootstrap_install(version, tarball, library),
+      error = function(err) {
+        catf("FAILED")
+        stop("failed to install:\n", conditionMessage(err))
+      }
+    )
+    catf("OK")
+  
+    # add empty line to break up bootstrapping from normal output
+    catf("")
+    return(invisible())
+  }
+  
+  renv_bootstrap_tests_running <- function() {
+    getOption("renv.tests.running", default = FALSE)
+  }
+  
+  renv_bootstrap_repos <- function() {
+  
+    # get CRAN repository
+    cran <- getOption("renv.repos.cran", "https://cloud.r-project.org")
+  
+    # check for repos override
+    repos <- Sys.getenv("RENV_CONFIG_REPOS_OVERRIDE", unset = NA)
+    if (!is.na(repos)) {
+  
+      # split on ';' if present
+      parts <- strsplit(repos, ";", fixed = TRUE)[[1L]]
+  
+      # split into named repositories if present
+      idx <- regexpr("=", parts, fixed = TRUE)
+      keys <- substring(parts, 1L, idx - 1L)
+      vals <- substring(parts, idx + 1L)
+      names(vals) <- keys
+  
+      # if we have a single unnamed repository, call it CRAN
+      if (length(vals) == 1L && identical(keys, ""))
+        names(vals) <- "CRAN"
+  
+      return(vals)
+  
+    }
+  
+    # check for lockfile repositories
+    repos <- tryCatch(renv_bootstrap_repos_lockfile(), error = identity)
+    if (!inherits(repos, "error") && length(repos))
+      return(repos)
+  
+    # retrieve current repos
+    repos <- getOption("repos")
+  
+    # ensure @CRAN@ entries are resolved
+    repos[repos == "@CRAN@"] <- cran
+  
+    # add in renv.bootstrap.repos if set
+    default <- c(FALLBACK = "https://cloud.r-project.org")
+    extra <- getOption("renv.bootstrap.repos", default = default)
+    repos <- c(repos, extra)
+  
+    # remove duplicates that might've snuck in
+    dupes <- duplicated(repos) | duplicated(names(repos))
+    repos[!dupes]
+  
+  }
+  
+  renv_bootstrap_repos_lockfile <- function() {
+  
+    lockpath <- Sys.getenv("RENV_PATHS_LOCKFILE", unset = "renv.lock")
+    if (!file.exists(lockpath))
+      return(NULL)
+  
+    lockfile <- tryCatch(renv_json_read(lockpath), error = identity)
+    if (inherits(lockfile, "error")) {
+      warning(lockfile)
+      return(NULL)
+    }
+  
+    repos <- lockfile$R$Repositories
+    if (length(repos) == 0)
+      return(NULL)
+  
+    keys <- vapply(repos, `[[`, "Name", FUN.VALUE = character(1))
+    vals <- vapply(repos, `[[`, "URL", FUN.VALUE = character(1))
+    names(vals) <- keys
+  
+    return(vals)
+  
+  }
+  
+  renv_bootstrap_download <- function(version) {
+  
+    sha <- attr(version, "sha", exact = TRUE)
+  
+    methods <- if (!is.null(sha)) {
+  
+      # attempting to bootstrap a development version of renv
+      c(
+        function() renv_bootstrap_download_tarball(sha),
+        function() renv_bootstrap_download_github(sha)
+      )
+  
+    } else {
+  
+      # attempting to bootstrap a release version of renv
+      c(
+        function() renv_bootstrap_download_tarball(version),
+        function() renv_bootstrap_download_cran_latest(version),
+        function() renv_bootstrap_download_cran_archive(version)
+      )
+  
+    }
+  
+    for (method in methods) {
+      path <- tryCatch(method(), error = identity)
+      if (is.character(path) && file.exists(path))
+        return(path)
+    }
+  
+    stop("All download methods failed")
+  
+  }
+  
+  renv_bootstrap_download_impl <- function(url, destfile) {
+  
+    mode <- "wb"
+  
+    # https://bugs.r-project.org/bugzilla/show_bug.cgi?id=17715
+    fixup <-
+      Sys.info()[["sysname"]] == "Windows" &&
+      substring(url, 1L, 5L) == "file:"
+  
+    if (fixup)
+      mode <- "w+b"
+  
+    args <- list(
+      url      = url,
+      destfile = destfile,
+      mode     = mode,
+      quiet    = TRUE
+    )
+  
+    if ("headers" %in% names(formals(utils::download.file))) {
+      headers <- renv_bootstrap_download_custom_headers(url)
+      if (length(headers) && is.character(headers))
+        args$headers <- headers
+    }
+  
+    do.call(utils::download.file, args)
+  
+  }
+  
+  renv_bootstrap_download_custom_headers <- function(url) {
+  
+    headers <- getOption("renv.download.headers")
+    if (is.null(headers))
+      return(character())
+  
+    if (!is.function(headers))
+      stopf("'renv.download.headers' is not a function")
+  
+    headers <- headers(url)
+    if (length(headers) == 0L)
+      return(character())
+  
+    if (is.list(headers))
+      headers <- unlist(headers, recursive = FALSE, use.names = TRUE)
+  
+    ok <-
+      is.character(headers) &&
+      is.character(names(headers)) &&
+      all(nzchar(names(headers)))
+  
+    if (!ok)
+      stop("invocation of 'renv.download.headers' did not return a named character vector")
+  
+    headers
+  
+  }
+  
+  renv_bootstrap_download_cran_latest <- function(version) {
+  
+    spec <- renv_bootstrap_download_cran_latest_find(version)
+    type  <- spec$type
+    repos <- spec$repos
+  
+    baseurl <- utils::contrib.url(repos = repos, type = type)
+    ext <- if (identical(type, "source"))
+      ".tar.gz"
+    else if (Sys.info()[["sysname"]] == "Windows")
+      ".zip"
+    else
+      ".tgz"
+    name <- sprintf("renv_%s%s", version, ext)
+    url <- paste(baseurl, name, sep = "/")
+  
+    destfile <- file.path(tempdir(), name)
+    status <- tryCatch(
+      renv_bootstrap_download_impl(url, destfile),
+      condition = identity
+    )
+  
+    if (inherits(status, "condition"))
+      return(FALSE)
+  
+    # report success and return
+    destfile
+  
+  }
+  
+  renv_bootstrap_download_cran_latest_find <- function(version) {
+  
+    # check whether binaries are supported on this system
+    binary <-
+      getOption("renv.bootstrap.binary", default = TRUE) &&
+      !identical(.Platform$pkgType, "source") &&
+      !identical(getOption("pkgType"), "source") &&
+      Sys.info()[["sysname"]] %in% c("Darwin", "Windows")
+  
+    types <- c(if (binary) "binary", "source")
+  
+    # iterate over types + repositories
+    for (type in types) {
+      for (repos in renv_bootstrap_repos()) {
+  
+        # build arguments for utils::available.packages() call
+        args <- list(type = type, repos = repos)
+  
+        # add custom headers if available -- note that
+        # utils::available.packages() will pass this to download.file()
+        if ("headers" %in% names(formals(utils::download.file))) {
+          headers <- renv_bootstrap_download_custom_headers(repos)
+          if (length(headers) && is.character(headers))
+            args$headers <- headers
+        }
+  
+        # retrieve package database
+        db <- tryCatch(
+          as.data.frame(
+            do.call(utils::available.packages, args),
+            stringsAsFactors = FALSE
+          ),
+          error = identity
+        )
+  
+        if (inherits(db, "error"))
+          next
+  
+        # check for compatible entry
+        entry <- db[db$Package %in% "renv" & db$Version %in% version, ]
+        if (nrow(entry) == 0)
+          next
+  
+        # found it; return spec to caller
+        spec <- list(entry = entry, type = type, repos = repos)
+        return(spec)
+  
+      }
+    }
+  
+    # if we got here, we failed to find renv
+    fmt <- "renv %s is not available from your declared package repositories"
+    stop(sprintf(fmt, version))
+  
+  }
+  
+  renv_bootstrap_download_cran_archive <- function(version) {
+  
+    name <- sprintf("renv_%s.tar.gz", version)
+    repos <- renv_bootstrap_repos()
+    urls <- file.path(repos, "src/contrib/Archive/renv", name)
+    destfile <- file.path(tempdir(), name)
+  
+    for (url in urls) {
+  
+      status <- tryCatch(
+        renv_bootstrap_download_impl(url, destfile),
+        condition = identity
+      )
+  
+      if (identical(status, 0L))
+        return(destfile)
+  
+    }
+  
+    return(FALSE)
+  
+  }
+  
+  renv_bootstrap_find <- function(version) {
+  
+    path <- renv_bootstrap_find_cache(version)
+    if (length(path) && file.exists(path)) {
+      catf("- Using renv %s from global package cache", version)
+      return(path)
+    }
+  
+  }
+  
+  renv_bootstrap_find_cache <- function(version) {
+  
+    md5 <- attr(version, "md5", exact = TRUE)
+    if (is.null(md5))
+      return()
+  
+    # infer path to renv cache
+    cache <- Sys.getenv("RENV_PATHS_CACHE", unset = "")
+    if (!nzchar(cache)) {
+      root <- Sys.getenv("RENV_PATHS_ROOT", unset = NA)
+      if (!is.na(root))
+        cache <- file.path(root, "cache")
+    }
+  
+    if (!nzchar(cache)) {
+      tools <- asNamespace("tools")
+      if (is.function(tools$R_user_dir)) {
+        root <- tools$R_user_dir("renv", "cache")
+        cache <- file.path(root, "cache")
+      }
+    }
+  
+    # start completing path to cache
+    file.path(
+      cache,
+      renv_bootstrap_cache_version(),
+      renv_bootstrap_platform_prefix(),
+      "renv",
+      version,
+      md5,
+      "renv"
+    )
+  
+  }
+  
+  renv_bootstrap_download_tarball <- function(version) {
+  
+    # if the user has provided the path to a tarball via
+    # an environment variable, then use it
+    tarball <- Sys.getenv("RENV_BOOTSTRAP_TARBALL", unset = NA)
+    if (is.na(tarball))
+      return()
+  
+    # allow directories
+    if (dir.exists(tarball)) {
+      name <- sprintf("renv_%s.tar.gz", version)
+      tarball <- file.path(tarball, name)
+    }
+  
+    # bail if it doesn't exist
+    if (!file.exists(tarball)) {
+  
+      # let the user know we weren't able to honour their request
+      fmt <- "- RENV_BOOTSTRAP_TARBALL is set (%s) but does not exist."
+      msg <- sprintf(fmt, tarball)
+      warning(msg)
+  
+      # bail
+      return()
+  
+    }
+  
+    catf("- Using local tarball '%s'.", tarball)
+    tarball
+  
+  }
+  
+  renv_bootstrap_github_token <- function() {
+    for (envvar in c("GITHUB_TOKEN", "GITHUB_PAT", "GH_TOKEN")) {
+      envval <- Sys.getenv(envvar, unset = NA)
+      if (!is.na(envval))
+        return(envval)
+    }
+  }
+  
+  renv_bootstrap_download_github <- function(version) {
+  
+    enabled <- Sys.getenv("RENV_BOOTSTRAP_FROM_GITHUB", unset = "TRUE")
+    if (!identical(enabled, "TRUE"))
+      return(FALSE)
+  
+    # prepare download options
+    token <- renv_bootstrap_github_token()
+    if (is.null(token))
+      token <- ""
+  
+    if (nzchar(Sys.which("curl")) && nzchar(token)) {
+      fmt <- "--location --fail --header \"Authorization: token %s\""
+      extra <- sprintf(fmt, token)
+      saved <- options("download.file.method", "download.file.extra")
+      options(download.file.method = "curl", download.file.extra = extra)
+      on.exit(do.call(base::options, saved), add = TRUE)
+    } else if (nzchar(Sys.which("wget")) && nzchar(token)) {
+      fmt <- "--header=\"Authorization: token %s\""
+      extra <- sprintf(fmt, token)
+      saved <- options("download.file.method", "download.file.extra")
+      options(download.file.method = "wget", download.file.extra = extra)
+      on.exit(do.call(base::options, saved), add = TRUE)
+    }
+  
+    url <- file.path("https://api.github.com/repos/rstudio/renv/tarball", version)
+    name <- sprintf("renv_%s.tar.gz", version)
+    destfile <- file.path(tempdir(), name)
+  
+    status <- tryCatch(
+      renv_bootstrap_download_impl(url, destfile),
+      condition = identity
+    )
+  
+    if (!identical(status, 0L))
+      return(FALSE)
+  
+    renv_bootstrap_download_augment(destfile)
+  
+    return(destfile)
+  
+  }
+  
+  # Add Sha to DESCRIPTION. This is stop gap until #890, after which we
+  # can use renv::install() to fully capture metadata.
+  renv_bootstrap_download_augment <- function(destfile) {
+    sha <- renv_bootstrap_git_extract_sha1_tar(destfile)
+    if (is.null(sha)) {
+      return()
+    }
+  
+    # Untar
+    tempdir <- tempfile("renv-github-")
+    on.exit(unlink(tempdir, recursive = TRUE), add = TRUE)
+    untar(destfile, exdir = tempdir)
+    pkgdir <- dir(tempdir, full.names = TRUE)[[1]]
+  
+    # Modify description
+    desc_path <- file.path(pkgdir, "DESCRIPTION")
+    desc_lines <- readLines(desc_path)
+    remotes_fields <- c(
+      "RemoteType: github",
+      "RemoteHost: api.github.com",
+      "RemoteRepo: renv",
+      "RemoteUsername: rstudio",
+      "RemotePkgRef: rstudio/renv",
+      paste("RemoteRef: ", sha),
+      paste("RemoteSha: ", sha)
+    )
+    writeLines(c(desc_lines[desc_lines != ""], remotes_fields), con = desc_path)
+  
+    # Re-tar
+    local({
+      old <- setwd(tempdir)
+      on.exit(setwd(old), add = TRUE)
+  
+      tar(destfile, compression = "gzip")
+    })
+    invisible()
+  }
+  
+  # Extract the commit hash from a git archive. Git archives include the SHA1
+  # hash as the comment field of the tarball pax extended header
+  # (see https://www.kernel.org/pub/software/scm/git/docs/git-archive.html)
+  # For GitHub archives this should be the first header after the default one
+  # (512 byte) header.
+  renv_bootstrap_git_extract_sha1_tar <- function(bundle) {
+  
+    # open the bundle for reading
+    # We use gzcon for everything because (from ?gzcon)
+    # > Reading from a connection which does not supply a 'gzip' magic
+    # > header is equivalent to reading from the original connection
+    conn <- gzcon(file(bundle, open = "rb", raw = TRUE))
+    on.exit(close(conn))
+  
+    # The default pax header is 512 bytes long and the first pax extended header
+    # with the comment should be 51 bytes long
+    # `52 comment=` (11 chars) + 40 byte SHA1 hash
+    len <- 0x200 + 0x33
+    res <- rawToChar(readBin(conn, "raw", n = len)[0x201:len])
+  
+    if (grepl("^52 comment=", res)) {
+      sub("52 comment=", "", res)
+    } else {
+      NULL
+    }
+  }
+  
+  renv_bootstrap_install <- function(version, tarball, library) {
+  
+    # attempt to install it into project library
+    dir.create(library, showWarnings = FALSE, recursive = TRUE)
+    output <- renv_bootstrap_install_impl(library, tarball)
+  
+    # check for successful install
+    status <- attr(output, "status")
+    if (is.null(status) || identical(status, 0L))
+      return(status)
+  
+    # an error occurred; report it
+    header <- "installation of renv failed"
+    lines <- paste(rep.int("=", nchar(header)), collapse = "")
+    text <- paste(c(header, lines, output), collapse = "\n")
+    stop(text)
+  
+  }
+  
+  renv_bootstrap_install_impl <- function(library, tarball) {
+  
+    # invoke using system2 so we can capture and report output
+    bin <- R.home("bin")
+    exe <- if (Sys.info()[["sysname"]] == "Windows") "R.exe" else "R"
+    R <- file.path(bin, exe)
+  
+    args <- c(
+      "--vanilla", "CMD", "INSTALL", "--no-multiarch",
+      "-l", shQuote(path.expand(library)),
+      shQuote(path.expand(tarball))
+    )
+  
+    system2(R, args, stdout = TRUE, stderr = TRUE)
+  
+  }
+  
+  renv_bootstrap_platform_prefix_default <- function() {
+  
+    # read version component
+    version <- Sys.getenv("RENV_PATHS_VERSION", unset = "R-%v")
+  
+    # expand placeholders
+    placeholders <- list(
+      list("%v", format(getRversion()[1, 1:2])),
+      list("%V", format(getRversion()[1, 1:3]))
+    )
+  
+    for (placeholder in placeholders)
+      version <- gsub(placeholder[[1L]], placeholder[[2L]], version, fixed = TRUE)
+  
+    # include SVN revision for development versions of R
+    # (to avoid sharing platform-specific artefacts with released versions of R)
+    devel <-
+      identical(R.version[["status"]],   "Under development (unstable)") ||
+      identical(R.version[["nickname"]], "Unsuffered Consequences")
+  
+    if (devel)
+      version <- paste(version, R.version[["svn rev"]], sep = "-r")
+  
+    version
+  
+  }
+  
+  renv_bootstrap_platform_prefix <- function() {
+  
+    # construct version prefix
+    version <- renv_bootstrap_platform_prefix_default()
+  
+    # build list of path components
+    components <- c(version, R.version$platform)
+  
+    # include prefix if provided by user
+    prefix <- renv_bootstrap_platform_prefix_impl()
+    if (!is.na(prefix) && nzchar(prefix))
+      components <- c(prefix, components)
+  
+    # build prefix
+    paste(components, collapse = "/")
+  
+  }
+  
+  renv_bootstrap_platform_prefix_impl <- function() {
+  
+    # if an explicit prefix has been supplied, use it
+    prefix <- Sys.getenv("RENV_PATHS_PREFIX", unset = NA)
+    if (!is.na(prefix))
+      return(prefix)
+  
+    # if the user has requested an automatic prefix, generate it
+    auto <- Sys.getenv("RENV_PATHS_PREFIX_AUTO", unset = NA)
+    if (is.na(auto) && getRversion() >= "4.4.0")
+      auto <- "TRUE"
+  
+    if (auto %in% c("TRUE", "True", "true", "1"))
+      return(renv_bootstrap_platform_prefix_auto())
+  
+    # empty string on failure
+    ""
+  
+  }
+  
+  renv_bootstrap_platform_prefix_auto <- function() {
+  
+    prefix <- tryCatch(renv_bootstrap_platform_os(), error = identity)
+    if (inherits(prefix, "error") || prefix %in% "unknown") {
+  
+      msg <- paste(
+        "failed to infer current operating system",
         "please file a bug report at https://github.com/rstudio/renv/issues",
         sep = "; "
       )

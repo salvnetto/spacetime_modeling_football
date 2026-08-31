@@ -1,0 +1,178 @@
+
+```{r}
+library(tidyverse)
+library(here)
+library(readr)
+library(ggsoccer)
+
+library(INLA)
+library(inlabru)
+library(fmesher)
+library(sp)
+library(sf)
+
+source(here('src', 'modeling.R'))
+```
+
+# Data
+
+```{r}
+events <- read_csv(here('data', 'processed', 'events.csv')) %>% 
+  distinct() %>% 
+  rename(team_with_poss = team_id)
+
+tracking <- read_csv(here('data', 'processed', 'tracking.csv')) %>%
+  distinct() %>% 
+  rename(period = period_id)
+
+ball <- tracking %>% 
+  filter(player_id == 'ball') %>% 
+  select(period, time_sec_orig, x_ball = x_pitch, y_ball = y_pitch, match_id)
+
+pitch_length <- 105
+pitch_width <- 68
+```
+
+```{r}
+event_type = "SHOT"
+event_subtype = NA
+start_time = 29
+end_time = 0
+pred_time_event = 0
+
+dataset <- prepare_data(events, tracking, event_type, event_subtype, start_time, end_time, pred_time_event)
+
+dataset_sf <- dataset %>% st_as_sf(coords = c("x", "y"), crs = NA)
+```
+
+# Mesh
+
+```{r}
+mesh <- create_meshes(dataset, max.edge = c(3, 12),offset = c(5, 15), cutoff = 2)
+```
+
+```{r}
+plot(mesh$s)
+```
+
+# SPDE Prior
+
+```{r}
+spde <- inla.spde2.pcmatern(
+  mesh = mesh$s,
+  prior.sigma = c(1, 0.01),
+  prior.range = c(100, 0.99)
+)
+```
+
+# FIT
+
+```{r}
+cmp <- ~ Intercept(1) +
+  field(
+    geometry,
+    model = spde
+  )
+```
+
+
+```{r}
+ips <- fm_int(
+    domain = list(geometry = mesh$s),
+    samplers = list(geometry = mesh$poly)
+  )
+
+fit <- bru(
+  cmp,
+  bru_obs(
+    geometry ~ .,
+    family = "cp",
+    data = dataset_sf,
+    ips = ips
+  ),
+  options = list(control.compute = list(waic = TRUE, dic = TRUE))
+)
+
+```
+
+```{r}
+summary(fit)
+saveRDS(fit, here("output", "fit", "fit_spatial.RDS"))
+```
+
+
+```{r}
+ppxl <- fm_pixels(mesh$s, mask = mesh$poly, format = "sf")
+
+lambda1 <- predict(
+  fit,
+  ppxl,
+  ~ data.frame(lambda = exp(Intercept + field))
+)
+
+saveRDS(lambda1, here("output", "pred", "pred_spatial.RDS"))
+```
+
+# IMAGES
+
+```{r}
+if (.Platform$OS.type == "windows") {
+  windowsFonts("Playfair Display" = windowsFont("Playfair Display"))
+  windowsFonts(playfair = windowsFont("Playfair Display"))
+}
+
+plt_mean <- ggplot() +
+  gg(lambda1, geom = "tile", aes(fill = mean, color = mean)) +
+  annotate_pitch(
+    dimensions = pitch_international,
+    fill       = NA,
+    colour     = "white",
+    alpha      = 0.6,  # Slightly increased for better contrast against magma
+    linewidth  = 0.5   # Ensure crisp, professional lines
+  ) +
+  scale_fill_viridis_c(
+    option = "magma",
+    na.value = "transparent",
+    name = "Intensity"
+  ) +
+  scale_color_viridis_c(
+    option = "magma",
+    na.value = "transparent",
+    guide = "none" # Prevents a duplicate legend from showing up
+  ) +
+  coord_fixed(
+    xlim = c(0, 105), 
+    ylim = c(0, 68), 
+    expand = FALSE 
+  ) +
+  annotate(
+    "segment",
+    x = 5, xend = 25, y = 4, yend = 4,
+    arrow = arrow(length = unit(0.2, "cm"), type = "closed"),
+    color = "white",
+    linewidth = 0.8,
+    alpha = 0.7
+  ) +
+  theme_minimal(base_family = "Playfair Display", base_size = 12) +
+  theme(
+    plot.background  = element_rect(fill = "white", colour = NA),
+    panel.background = element_rect(fill = "#1A1A1A", colour = NA), # Dark background makes magma glow
+    panel.grid       = element_blank(),
+    panel.border     = element_rect(colour = "#DDDDDD", fill = NA, linewidth = 0.4),
+    axis.title = element_blank(), 
+    axis.text = element_blank(), 
+    axis.ticks = element_blank(),
+    plot.margin = margin(24, 28, 18, 28),
+    strip.background = element_rect(fill = "#F2F2F2", colour = "#DDDDDD", linewidth = 0.4),
+    strip.text       = element_text(
+      colour = "#111111", size = 12, face = "bold",
+      margin = margin(t = 8, b = 8)
+    )
+  )
+```
+
+```{r}
+plt_mean
+ggsave(here("output" , "img", "spatial_team_common.jpg"), plot = plt_mean, width = 5, height = 3, dpi = 300)
+```
+

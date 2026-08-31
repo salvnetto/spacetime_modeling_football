@@ -5,33 +5,32 @@ library(here)
 library(readr)
 
 library(INLA)
-library(INLAspacetime)
 library(inlabru)
 library(fmesher)
 library(sp)
 library(sf)
 
-
-source(here('src', 'plots.R'))
-source(here('src', 'helpers.R'))
 source(here('src', 'modeling.R'))
+
+if (.Platform$OS.type == "windows") {
+  windowsFonts(playfair = windowsFont("Playfair Display"))
+}
 ```
 
 # Data
 
 ```{r}
-events <- read_csv(here('data', 'events_dfl.csv')) %>% 
+events <- read_csv(here('data', 'processed', 'events.csv')) %>% 
   distinct() %>% 
   rename(team_with_poss = team_id)
 
-tracking <- read_csv(here('data', 'tracking_dfl_secs.csv')) %>%
+tracking <- read_csv(here('data', 'processed', 'tracking.csv')) %>%
   distinct() %>% 
-  own_goal_direction() %>% 
-  filter(is_goalkeeper == 0)
+  rename(period = period_id)
 
 ball <- tracking %>% 
   filter(player_id == 'ball') %>% 
-  select(period, time_sec_orig = time_seg, x_ball = x_pitch, y_ball = y_pitch, match_id)
+  select(period, time_sec_orig, x_ball = x_pitch, y_ball = y_pitch, match_id)
 
 pitch_length <- 105
 pitch_width <- 68
@@ -40,7 +39,7 @@ pitch_width <- 68
 ```{r}
 event_type = "SHOT"
 event_subtype = NA
-start_time = 29
+start_time = 30
 end_time = 0
 pred_time_event = 0
 
@@ -97,27 +96,15 @@ fit <- bru(
     data = dataset_sf,
     ips = ips
   ),
-  options = list(verbose = TRUE)
+  options = list(control.compute = list(waic = TRUE, dic = TRUE))
 )
 
 ```
 
 ```{r}
 summary(fit)
-```
 
-```{r}
-# jpeg(here("output", "img", "lgcp", "model_marginals.jpg"), width = 800, height = 800, quality = 100)
-# 
-# par(mfrow = c(2, 2))
-# 
-# intercept_exp <- INLA::inla.tmarginal(exp, fit$marginals.fixed$Intercept)
-# plot(intercept_exp, type = "l", main = "Baseline Intensity (exp(Intercept))")
-# plot(fit$marginals.hyperpar$`Range for field`, type = "l", main = "Range")
-# plot(fit$marginals.hyperpar$`Stdev for field`, type = "l", main = "StDev")
-# plot(fit$marginals.hyperpar$`GroupRho for field`, type = "l", main = "ACF1")
-# 
-# dev.off()
+saveRDS(fit, here("output", "fit", "fit_temporal.RDS"))
 ```
 
 ```{r}
@@ -129,7 +116,10 @@ lambda1 <- predict(
   ppxl_all,
   ~ data.frame(time_sec = time_sec, lambda = exp(Intercept + field))
 )
+
+saveRDS(lambda1, here("output", "pred", "pred_temporal.RDS"))
 ```
+# IMAGES
 
 ```{r}
 lambda0 <- lambda1 %>% filter(time_sec %in% c(5, 10, 15, 20, 25, 30))
@@ -185,7 +175,7 @@ plt_mean <- ggplot() +
   )
 
 plt_mean
-ggsave(here("output" , "img", "lgcp", "temp_mean.pdf"), plot = plt_mean, width = 8, height = 4, dpi = 300)
+ggsave(here("output" , "img", "temp_mean.pdf"), plot = plt_mean, width = 8, height = 4, dpi = 300)
 ```
 
 ```{r}
@@ -242,7 +232,7 @@ plt_mean2 <- ggplot() +
   )
 
 plt_mean2
-ggsave(here("output" , "img", "lgcp", "temp_mean2.pdf"), plot = plt_mean2, width = 8, height = 4, dpi = 300)
+ggsave(here("output" , "img", "temp_mean2.pdf"), plot = plt_mean2, width = 8, height = 4, dpi = 300)
 ```
 
 ```{r}
@@ -299,7 +289,7 @@ plt_mean3 <- ggplot() +
   )
 
 plt_mean3
-ggsave(here("output" , "img", "lgcp", "temp_mean3.pdf"), plot = plt_mean3, width = 8, height = 4, dpi = 300)
+ggsave(here("output" , "img", "temp_mean3.pdf"), plot = plt_mean3, width = 8, height = 4, dpi = 300)
 ```
 
 

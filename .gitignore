@@ -34,3 +34,10 @@ main.tex
 dgruyter.ist
 references.bib
 referencia/
+.posit/assistant
+.conda/
+.posit/
+AGENTS.md
+data/raw
+data/interim
+output/

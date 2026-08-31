@@ -1,37 +1,35 @@
-
 ```{r}
 library(tidyverse)
 library(here)
 library(readr)
 
+if (.Platform$OS.type == "windows") {
+  windowsFonts(playfair = windowsFont("Playfair Display"))
+}
+
 library(INLA)
-library(INLAspacetime)
 library(inlabru)
 library(fmesher)
 library(sp)
 library(sf)
 
-
-source(here('src', 'plots.R'))
-source(here('src', 'helpers.R'))
 source(here('src', 'modeling.R'))
 ```
 
 # Data
 
 ```{r}
-events <- read_csv(here('data', 'events_dfl.csv')) %>% 
+events <- read_csv(here('data', 'processed', 'events.csv')) %>% 
   distinct() %>% 
   rename(team_with_poss = team_id)
 
-tracking <- read_csv(here('data', 'tracking_dfl_secs.csv')) %>%
+tracking <- read_csv(here('data', 'processed', 'tracking.csv')) %>%
   distinct() %>% 
-  own_goal_direction() %>% 
-  filter(is_goalkeeper == 0)
+  rename(period = period_id)
 
 ball <- tracking %>% 
   filter(player_id == 'ball') %>% 
-  select(period, time_sec_orig = time_seg, x_ball = x_pitch, y_ball = y_pitch, match_id)
+  select(period, time_sec_orig, x_ball = x_pitch, y_ball = y_pitch, match_id)
 
 pitch_length <- 105
 pitch_width <- 68
@@ -40,7 +38,7 @@ pitch_width <- 68
 ```{r}
 event_type = "SHOT"
 event_subtype = NA
-start_time = 29
+start_time = 30
 end_time = 0
 pred_time_event = 0
 
@@ -49,11 +47,10 @@ dataset <- prepare_data(events, tracking, event_type, event_subtype, start_time,
 dataset_sf <- dataset %>% st_as_sf(coords = c("x", "y"), crs = NA)
 ```
 
-
 # Mesh
 
 ```{r}
-mesh <- create_meshes(dataset, max.edge = c(3, 12),offset = c(5, 15), cutoff = 2)
+mesh <- create_meshes(dataset, max.edge = c(3, 12), offset = c(5, 15), cutoff = 2)
 ```
 
 ```{r}
@@ -115,27 +112,14 @@ fit <- bru(
   cmp,
   lik_atk,
   lik_def,
-  options = list(verbose = TRUE)
+  options = list(control.compute = list(waic = TRUE))
 )
 ```
 
 ```{r}
 summary(fit)
-```
 
-```{r}
-# jpeg(here("output", "img", "lgcp", "model_marginals.jpg"), width = 800, height = 800, quality = 100)
-# 
-# par(mfrow = c(3, 2))
-# 
-# intercept_exp <- INLA::inla.tmarginal(exp, fit$marginals.fixed$Intercept)
-# plot(intercept_exp, type = "l", main = "Baseline Intensity (exp(Intercept))")
-# plot(fit$marginals.hyperpar$`Range for Common`, type = "l", main = "Range Common")
-# plot(fit$marginals.hyperpar$`Stdev for Common`, type = "l", main = "StDev Common")
-# plot(fit$marginals.hyperpar$`Range for Difference`, type = "l", main = "Range Diff")
-# plot(fit$marginals.hyperpar$`Stdev for Difference`, type = "l", main = "StDev Diff")
-# 
-# dev.off()
+saveRDS(fit, here("output", "fit", "fit_temporal_diff.RDS"))
 ```
 
 ```{r}
@@ -156,20 +140,30 @@ pred_def <- predict(
   formula = ~ exp(Intercept + Common - Difference / 2)
 )
 
-# # Predict the Common spatial field
-# pred_common <- predict(
-#   fit,
-#   newdata = pred_grid,
-#   formula = ~ Common
-# )
-# 
-# # Predict the Difference spatial field
-# pred_diff <- predict(
-#   fit,
-#   newdata = pred_grid,
-#   formula = ~ Difference
-# )
+# Predict the Common spatial field
+pred_common <- predict(
+  fit,
+  newdata = pred_grid,
+  formula = ~ Common
+)
+
+# Predict the Difference spatial field
+pred_diff <- predict(
+  fit,
+  newdata = pred_grid,
+  formula = ~ Difference
+)
+
+pred_list <- list(
+  pred_atk = pred_atk,
+  pred_def = pred_def,
+  pred_common = pred_common,
+  pred_diff = pred_diff
+)
+saveRDS(pred_list, here("output", "pred_temporal_diff.rds"))
 ```
+
+# IMAGES
 
 ```{r}
 pred_atk <- pred_atk %>% mutate(Phase = "Attack")
@@ -392,7 +386,6 @@ plt_diff <- ggplot() +
 
 plt_common
 plt_diff
-ggsave(here("output" , "img", "lgcp", "temp_team_common.pdf"), plot = plt_common, width = 9, height = 5, dpi = 300)
-ggsave(here("output" , "img", "lgcp", "temp_team_dif.pdf"), plot = plt_diff, width = 9, height = 5, dpi = 300)
+ggsave(here("output" , "img", "lgcp", "temp_team_common.pdf"), plot = plt_common, width = 9, height = 5, dpi = 300, device = cairo_pdf)
+ggsave(here("output" , "img", "lgcp", "temp_team_dif.pdf"), plot = plt_diff, width = 9, height = 5, dpi = 300, device = cairo_pdf)
 ```
-

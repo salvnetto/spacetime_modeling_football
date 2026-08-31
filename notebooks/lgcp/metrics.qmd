@@ -1,0 +1,150 @@
+```{r}
+library(tidyverse)
+library(here)
+library(readr)
+
+library(INLA)
+library(inlabru)
+library(fmesher)
+library(sp)
+library(sf)
+library(ggsoccer)
+
+source(here('src', 'modeling.R'))
+source(here('src', 'metrics.R'))
+```
+
+# Data
+
+```{r}
+fit <- readRDS(here("output", "fit_fortuna.rds"))
+pred_list <- readRDS(here("output", "pred_fortuna.rds"))
+```
+
+```{r}
+summary(fit)
+```
+
+
+```{r}
+df_ssi <- compute_ssi(pred_list$pred_diff)
+df_xST <- compute_adv_xST(pred_list$pred_diff)
+```
+
+```{r}
+df_ssi
+df_xST
+```
+
+
+```{r}
+library(scales) # Required for scales::squish
+if (.Platform$OS.type == "windows") {
+  windowsFonts(playfair = windowsFont("Playfair Display"))
+}
+
+plt_diff <- ggplot() +
+  gg(pred_list$pred_diff %>% filter(time_sec %in% c(5, 10, 15, 20, 25, 30)), geom = "tile", aes(fill = mean, color = mean)) +
+  annotate_pitch(
+    dimensions = pitch_international,
+    fill       = NA,
+    colour     = "gray50", 
+    alpha      = 0.5
+  ) +
+  coord_fixed(
+    xlim = c(0, 105), 
+    ylim = c(0, 68), 
+    expand = FALSE 
+  ) +
+  facet_wrap(~ time_sec) +
+  scale_fill_gradient2(
+    low      = "blue", 
+    mid      = "white", 
+    high     = "red", 
+    midpoint = 0, 
+    limits   = c(-2, 2),       # Forces the legend scale to be exactly -1.5 to 1.5
+    oob      = scales::squish,     # Caps extreme values at red/blue instead of turning them NA
+    name     = "Difference"
+  ) +
+  scale_colour_gradient2(
+    low      = "blue", 
+    mid      = "white", 
+    high     = "red", 
+    midpoint = 0, 
+    limits   = c(-2, 2),        
+    oob      = scales::squish,
+    name     = "Difference"     # <-- Match the name from scale_fill_gradient2
+  ) +
+  annotate(
+    "segment",
+    x = 5, xend = 25, y = 3, yend = 3,
+    arrow = arrow(length = unit(0.2, "cm"), type = "closed"),
+    color = "black",
+    linewidth = 0.8,
+    alpha = 0.7
+  ) +
+  theme_minimal(base_family = "Playfair Display", base_size = 12) +
+  theme(
+    plot.background  = element_rect(fill = "white", colour = NA),
+    panel.background = element_rect(fill = "#1A1A1A", colour = NA), 
+    panel.grid       = element_blank(),
+    panel.border     = element_rect(colour = "#DDDDDD", fill = NA, linewidth = 0.4),
+    axis.title       = element_blank(), 
+    axis.text        = element_blank(), 
+    axis.ticks       = element_blank(),
+    plot.margin      = margin(24, 28, 18, 28),
+    strip.background = element_rect(fill = "#F2F2F2", colour = "#DDDDDD", linewidth = 0.4),
+
+    # Top facet labels (Quantiles / Mean)
+    strip.text.x = element_text(
+      colour = "#111111", 
+      size = 12, 
+      face = "bold",
+      margin = margin(t = 8, b = 8)
+    ),
+
+    # Side facet labels (Attack / Defense)
+    strip.text.y = element_text(
+      colour = "#111111", 
+      size = 16,           
+      face = "bold",
+      margin = margin(l = 8, r = 8) 
+    )
+  )
+
+plt_diff
+ggsave(here("img" , "fortuna_team_dif.pdf"), plot = plt_diff, width = 8, height = 4, dpi = 600, device = cairo_pdf)
+```
+
+```{r}
+library(ggplot2)
+library(ggsoccer)
+library(here)
+
+if (.Platform$OS.type == "windows") {
+  windowsFonts(playfair = windowsFont("Playfair Display"))
+}
+
+# Define Zone 14 coordinates based on the paper's central attacking region
+x_min <- 70
+x_max <- 88.5
+y_min <- 24
+y_max <- 44
+
+p_zone14 <- ggplot() +
+  annotate_pitch(dimensions = pitch_international, fill = NA, colour = "gray50") +
+  theme_pitch() +
+  # Highlight Zone 14
+  annotate("rect", xmin = x_min, xmax = x_max, ymin = y_min, ymax = y_max, 
+           fill = "red", alpha = 0.4, color = "darkgrey", linewidth = 0.5) +
+  # Add text label
+  annotate("text", x = (x_min + x_max)/2, y = (y_min + y_max)/2, 
+           label = "Zone 14", color = "white", fontface = "bold", size = 5, family = "Playfair Display") +
+  theme(
+    plot.background = element_rect(fill = "white", colour = NA),
+    plot.title = element_text(family = "Playfair Display", face = "bold", hjust = 0.5, size = 16)
+  )
+
+ggsave(here("img" , "zone14.pdf"), plot = p_zone14, width = 8, height = 4, dpi = 600, device = cairo_pdf)
+```
+

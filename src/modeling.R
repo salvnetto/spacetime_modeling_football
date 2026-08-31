@@ -1,112 +1,253 @@
-,\"protocols\":[{\"name\":\"connect\",\"host\":\"eglc860.m1.fastly-masque.net\",\"port\":2499,\"scheme\":\"https\"}]}]}]},{\"name\":\"Germany\",\"code\":\"DE\",\"cities\":[{\"name\":\"Munich\",\"code\":\"MUC\",\"servers\":[{\"port\":2499,\"hostname\":\"muc139.m1.fastly-masque.net\",\"quarantined\":false,\"protocols\":[{\"name\":\"connect\",\"host\":\"muc139.m1.fastly-masque.net\",\"port\":2499,\"scheme\":\"https\"}]}]}]},{\"name\":\"CatchAll Anycast\",\"code\":\"US\",\"cities\":[{\"name\":\"USA\",\"code\":\"Q30\",\"servers\":[{\"port\":2499,\"hostname\":\"p.m1.fastly-masque.net\",\"quarantined\":false,\"protocols\":[{\"name\":\"connect\",\"host\":\"p.m1.fastly-masque.net\",\"port\":2499,\"scheme\":\"https\"}]}]}]},{\"name\":\"France\",\"code\":\"FR\",\"cities\":[{\"name\":\"Paris\",\"code\":\"LFPB\",\"servers\":[{\"port\":2499,\"hostname\":\"lfpb115.m1.fastly-masque.net\",\"quarantined\":false,\"protocols\":[{\"name\":\"connect\",\"host\":\"lfpb115.m1.fastly-masque.net\",\"port\":2499,\"scheme\":\"https\"}]}]}]},{\"name\":\"Canada\",\"code\":\"CA\",\"cities\":[{\"name\":\"Toronto\",\"code\":\"YYZ\",\"servers\":[{\"port\":2499,\"hostname\":\"yyz45.m1.fastly-masque.net\",\"quarantined\":false,\"protocols\":[{\"name\":\"connect\",\"host\":\"yyz45.m1.fastly-masque.net\",\"port\":2499,\"scheme\":\"https\"}]}]}]},{\"name\":\"Recomended Location\",\"code\":\"REC\",\"cities\":[{\"name\":\"Recomended City\",\"code\":\"REC\",\"servers\":[{\"port\":2499,\"hostname\":\"p.m1.fastly-masque.net\",\"quarantined\":false,\"protocols\":[{\"name\":\"connect\",\"host\":\"p.m1.fastly-masque.net\",\"port\":2499,\"scheme\":\"https\"}]}]}]}]");
-user_pref("browser.laterrun.bookkeeping.profileCreationTime", 1770494251);
-user_pref("browser.laterrun.bookkeeping.sessionCount", 1);
-user_pref("browser.laterrun.bookkeeping.updateAppliedTime", 1787691411);
-user_pref("browser.launcherProcess.enabled", true);
-user_pref("browser.migrate.interactions.bookmarks", true);
-user_pref("browser.migration.version", 177);
-user_pref("browser.ml.chat.enabled", false);
-user_pref("browser.ml.chat.nimbus", "ai-chatbot-page-summarization-mvp-treatment-a-callout-badge-rollout-v4:treatment-a-callout-badge");
-user_pref("browser.ml.chat.page", false);
-user_pref("browser.ml.linkPreview.enabled", false);
-user_pref("browser.newtabpage.activity-stream.discoverystream.locale-weather-config", "en-CA, en-GB, en-US, pt-BR, es-AR, es-CL, es-MX");
-user_pref("browser.newtabpage.activity-stream.discoverystream.placements.spocs", "newtab_stories_1, newtab_stories_2, newtab_stories_3, newtab_stories_4, newtab_stories_5, newtab_stories_6, newtab_stories_7, newtab_stories_8, newtab_stories_9, newtab_stories_10, newtab_stories_11, newtab_stories_12");
-user_pref("browser.newtabpage.activity-stream.discoverystream.placements.spocs.counts", "1,1,1,1,1,1,1,1,1,1,1,1");
-user_pref("browser.newtabpage.activity-stream.discoverystream.region-weather-config", "BR, AR, CL, CO, EC, MX, AU, NZ, ZA");
-user_pref("browser.newtabpage.activity-stream.feeds.topsites", false);
-user_pref("browser.newtabpage.activity-stream.impressionId", "{3f5d93e7-09d8-45aa-ad0e-0cb7a2ed6754}");
-user_pref("browser.newtabpage.activity-stream.newtabWallpapers.user.enabled.migrated", true);
-user_pref("browser.newtabpage.activity-stream.showSearch", false);
-user_pref("browser.newtabpage.activity-stream.showSponsoredCheckboxes", false);
-user_pref("browser.newtabpage.activity-stream.showSponsoredTopSites", false);
-user_pref("browser.newtabpage.activity-stream.showWeather", false);
-user_pref("browser.newtabpage.activity-stream.widgets.sportsWidget.enabled", false);
-user_pref("browser.newtabpage.activity-stream.widgets.sportsWidget.pollLiveMs", 60000);
-user_pref("browser.newtabpage.enabled", false);
-user_pref("browser.newtabpage.storageVersion", 1);
-user_pref("browser.newtabpage.trainhopAddon.version", "156.1.20260818.43226");
-user_pref("browser.pageActions.persistedActions", "{\"ids\":[\"bookmark\"],\"idsInUrlbar\":[\"bookmark\"],\"idsInUrlbarPreProton\":[],\"version\":1}");
-user_pref("browser.pagethumbnails.storage_version", 3);
-user_pref("browser.privacySegmentation.createdShortcut", true);
-user_pref("browser.proton.toolbar.version", 3);
-user_pref("browser.region.update.updated", 1787695399);
-user_pref("browser.rights.3.shown", true);
-user_pref("browser.safebrowsing.provider.google4.lastupdatetime", "1770494290249");
-user_pref("browser.safebrowsing.provider.google4.nextupdatetime", "1770496062249");
-user_pref("browser.safebrowsing.provider.google5.lastupdatetime", "1787747914049");
-user_pref("browser.safebrowsing.provider.google5.nextupdatetime", "1787834314049");
-user_pref("browser.safebrowsing.provider.mozilla.lastupdatetime", "1787767713754");
-user_pref("browser.safebrowsing.provider.mozilla.nextupdatetime", "1787789313754");
-user_pref("browser.search.region", "BR");
-user_pref("browser.search.serpEventTelemetryCategorization.regionEnabled", false);
-user_pref("browser.search.totalSearches", 100);
-user_pref("browser.sessionstore.upgradeBackup.latestBuildID", "20260824154132");
-user_pref("browser.shell.customIcon.perUserStartMenuShortcutCreated", true);
-user_pref("browser.shell.mostRecentDateSetAsDefault", "1787762897");
-user_pref("browser.startup.couldRestoreSession.count", 2);
-user_pref("browser.startup.homepage", "chrome://browser/content/blanktab.html");
-user_pref("browser.startup.homepage_override.buildID", "20260824154132");
-user_pref("browser.startup.homepage_override.mstone", "154.0.1");
-user_pref("browser.startup.lastColdStartupCheck", 1787762898);
-user_pref("browser.tabs.groups.smart.enabled", false);
-user_pref("browser.tabs.groups.smart.userEnabled", false);
-user_pref("browser.tabs.hoverPreview.showThumbnails", false);
-user_pref("browser.tabs.splitview.hasUsed", true);
-user_pref("browser.termsofuse.prefMigrationCheck", true);
-user_pref("browser.theme.toolbar-theme", 0);
-user_pref("browser.toolbarbuttons.introduced.sidebar-button", true);
-user_pref("browser.toolbars.bookmarks.visibility", "always");
-user_pref("browser.translations.enable", false);
-user_pref("browser.translations.neverTranslateLanguages", "pt");
-user_pref("browser.uiCustomization.state", "{\"placements\":{\"widget-overflow-fixed-list\":[],\"unified-extensions-area\":[],\"nav-bar\":[\"sidebar-button\",\"back-button\",\"forward-button\",\"stop-reload-button\",\"customizableui-special-spring1\",\"vertical-spacer\",\"urlbar-container\",\"customizableui-special-spring2\",\"downloads-button\",\"fxa-toolbar-menu-button\",\"unified-extensions-button\",\"ublock0_raymondhill_net-browser-action\",\"2_0_disconnect_me-browser-action\",\"87677a2c52b84ad3a151a4a72f5bd3c4_jetpack-browser-action\",\"reset-pbm-toolbar-button\",\"coldturkey_getcoldturkey_com-browser-action\",\"vpn_mozilla_com-browser-action\",\"_94ed9bbf-a1e2-4e58-81ae-cd16dad818d8_-browser-action\",\"browsec_browsec_com-browser-action\"],\"toolbar-menubar\":[\"menubar-items\"],\"TabsToolbar\":[\"firefox-view-button\",\"tabbrowser-tabs\",\"new-tab-button\",\"alltabs-button\"],\"vertical-tabs\":[],\"PersonalToolbar\":[\"personal-bookmarks\"]},\"seen\":[\"developer-button\",\"screenshot-button\",\"fxms-bmb-button\",\"ublock0_raymondhill_net-browser-action\",\"2_0_disconnect_me-browser-action\",\"87677a2c52b84ad3a151a4a72f5bd3c4_jetpack-browser-action\",\"reset-pbm-toolbar-button\",\"coldturkey_getcoldturkey_com-browser-action\",\"vpn_mozilla_com-browser-action\",\"_94ed9bbf-a1e2-4e58-81ae-cd16dad818d8_-browser-action\",\"browsec_browsec_com-browser-action\"],\"dirtyAreaCache\":[\"nav-bar\",\"vertical-tabs\",\"PersonalToolbar\",\"unified-extensions-area\",\"toolbar-menubar\",\"TabsToolbar\"],\"currentVersion\":25,\"newElementCount\":2}");
-user_pref("browser.urlbar.lastUrlbarSearchSeconds", 1787771665);
-user_pref("browser.urlbar.perplexity.hasBeenInSearchMode", true);
-user_pref("browser.urlbar.placeholderName", "Google");
-user_pref("browser.urlbar.placeholderName.private", "Google");
-user_pref("browser.urlbar.quickactions.timesShownOnboardingLabel", 3);
-user_pref("browser.urlbar.quicksuggest.migrationVersion", 7);
-user_pref("browser.urlbar.tipShownCount.searchTip_onboard", 4);
-user_pref("browser.urlbar.tipShownCount.searchTip_redirect", 4);
-user_pref("captchadetection.hasUnsubmittedData", false);
-user_pref("captchadetection.lastSubmission", 1787720);
-user_pref("datareporting.dau.cachedUsageProfileGroupID", "b0bacafe-b0ba-cafe-b0ba-cafeb0bacafe");
-user_pref("datareporting.dau.cachedUsageProfileID", "beefbeef-beef-beef-beef-beeefbeefbee");
-user_pref("datareporting.healthreport.uploadEnabled", false);
-user_pref("datareporting.usage.uploadEnabled", false);
-user_pref("devtools.everOpened", true);
-user_pref("devtools.toolbox.footer.height", 525);
-user_pref("devtools.toolsidebar-height.inspector", 350);
-user_pref("devtools.toolsidebar-width.inspector", 700);
-user_pref("devtools.toolsidebar-width.inspector.splitsidebar", 350);
-user_pref("distribution.iniFile.exists.appversion", "154.0.1");
-user_pref("distribution.iniFile.exists.value", false);
-user_pref("doh-rollout.doneFirstRun", true);
-user_pref("doh-rollout.home-region", "BR");
-user_pref("dom.forms.autocomplete.formautofill", true);
-user_pref("dom.push.userAgentID", "2ffe0b02c6a7494a99d330da8c37a3f8");
-user_pref("extensions.activeThemeID", "default-theme@mozilla.org");
-user_pref("extensions.blocklist.pingCountVersion", -1);
-user_pref("extensions.colorway-builtin-themes-cleanup", 1);
-user_pref("extensions.databaseSchema", 37);
-user_pref("extensions.formautofill.useml.nativeOnnxAvailable", true);
-user_pref("extensions.getAddons.cache.lastUpdate", 1787747940);
-user_pref("extensions.getAddons.databaseSchema", 6);
-user_pref("extensions.lastAppBuildId", "20260824154132");
-user_pref("extensions.lastAppVersion", "154.0.1");
-user_pref("extensions.lastPlatformVersion", "154.0.1");
-user_pref("extensions.ml.enabled", false);
-user_pref("extensions.pendingOperations", false);
-user_pref("extensions.pictureinpicture.enable_picture_in_picture_overrides", true);
-user_pref("extensions.quarantinedDomains.list", "autoatendimento.bb.com.br,ibpf.sicredi.com.br,ibpj.sicredi.com.br,internetbanking.caixa.gov.br,www.ib12.bradesco.com.br,www2.bancobrasil.com.br");
-user_pref("extensions.signatureCheckpoint", 1);
-user_pref("extensions.systemAddonSet", "{\"schema\":1,\"directory\":\"{7086716a-ea5a-4869-93cd-27457665857e}\",\"addons\":{\"ipp-activator@mozilla.com\":{\"version\":\"0.2.20260622.182020\"}}}");
-user_pref("extensions.ui.dictionary.hidden", true);
-user_pref("extensions.ui.extension.hidden", false);
-user_pref("extensions.ui.lastCategory", "addons://list/extension");
-user_pref("extensions.ui.locale.hidden", false);
-user_pref("extensions.ui.mlmodel.hidden", true);
-user_pref("extensions.ui.sitepermission.hidden", true);
-user_pref("extensions.webextensions.ExtensionStorageIDB.migrated.87677a2c52b84ad3a151a4a72f5bd3c4@jetpack", true);
-user_pref("extensions.webextensions.ExtensionStorageIDB.migrated.coldturkey@getcoldturkey.com", true);
-user_pref("extensions.webextensions.ExtensionStorageIDB.migrated.uBlock0@raymondhill.net", true);
-user_pref("extensions.webextensions.uuids", "{\"data-leak-blocker@mozilla.com\":\"4aa37582-5e4d-4717-ba5c-5304d8caef70\",\"formautofill@mozilla.org\":\"3c891242-54b6-4ef8-8987-3b4f9849b602\",\"ipp-activator@mozilla.com\":\"ff3e627f-9842-4767-8710-fb6dfa123175\",\"pictureinpicture@mozilla.org\":\"cc07d524-5ec2-4375-93b3-2331a9c3a92c\",\"addo
+# src/modeling.R
+# This script contains functions for preparing soccer tracking/event data for LGCP modeling
+# and creating the necessary spatial and temporal meshes for INLA/inlabru.
+
+library(tidyverse)
+library(sf)
+library(fmesher)
+
+# -------------------------------------------------------------------------
+# 1. Mesh Creation for INLA / inlabru
+# -------------------------------------------------------------------------
+create_meshes <- function(dataset, max.edge = c(3, 12), offset = c(5, 15), cutoff = 2, t_step = 5) {
+  # Standard pitch dimensions
+  pitch_length <- 105
+  pitch_width <- 68
+  
+  # Create boundary polygon for the pitch
+  pitch_matrix <- matrix(c(
+    0, 0,
+    pitch_length, 0,
+    pitch_length, pitch_width,
+    0, pitch_width,
+    0, 0
+  ), ncol = 2, byrow = TRUE)
+  
+  pitch_poly <- st_polygon(list(pitch_matrix))
+  pitch_sf <- st_sfc(pitch_poly)
+  
+  # 2D Spatial Mesh
+  mesh_s <- fm_mesh_2d(
+    boundary = pitch_sf,
+    max.edge = max.edge,
+    offset = offset,
+    cutoff = cutoff
+  )
+  
+  # 1D Temporal Mesh
+  min_time <- min(dataset$time_sec, na.rm = TRUE)
+  max_time <- max(dataset$time_sec, na.rm = TRUE)
+  t_knots <- unique(c(min_time, seq(t_step, max_time, by = t_step), max_time))
+  mesh_t <- fm_mesh_1d(t_knots)
+  
+  return(list(
+    s = mesh_s,
+    t = mesh_t,
+    poly = pitch_sf
+  ))
+}
+
+# -------------------------------------------------------------------------
+# 2. Data Preparation for Spatiotemporal LGCP
+# -------------------------------------------------------------------------
+prepare_data <- function(events, tracking, event_type_filter = "SHOT", 
+                         event_subtype = NA, start_time = 29, 
+                         end_time = 0, pred_time_event = 0,
+                         keep_all_teams = TRUE,
+                         attacking_half_only = TRUE) {
+  
+  # Standard pitch dimensions
+  pitch_length <- 105
+  pitch_width <- 68
+  
+  period_col_track <- if ("period" %in% names(tracking)) "period" else "period_id"
+  period_col_events <- if ("period" %in% names(events)) "period" else "period_id"
+  
+  # Deduce team attacking direction using goalkeepers
+  # A goalkeeper's mean X position will be near their own goal (defending goal)
+  gk_means <- tracking %>%
+    filter(is_goalkeeper == 1, !is.na(team_id)) %>%
+    group_by(match_id, !!sym(period_col_track), team_id) %>%
+    summarize(gk_mean_x = mean(x_pitch, na.rm = TRUE), .groups = "drop")
+  
+  # If the goalkeeper is on the right side (mean X > 52.5), the team is defending the right goal
+  # and attacking the left goal. Thus, their coordinates need to be flipped so they attack right.
+  team_dirs <- gk_means %>%
+    mutate(flip_required = gk_mean_x > (pitch_length / 2)) %>%
+    select(match_id, !!sym(period_col_track), team_id, flip_required)
+  
+  # Filter out goalkeepers from the tracking data for the analysis
+  tracking <- tracking %>% filter(is.na(is_goalkeeper) | is_goalkeeper == 0)
+  
+  # Filter the events that act as the 'anchor' (e.g., Shots)
+  # Filter the events that act as the 'anchor' (e.g., Shots)
+  target_events <- events %>%
+    filter(event_type == event_type_filter)
+  
+  if ("set_piece_type" %in% names(target_events)) {
+    if (is.na(event_subtype)) {
+      # Default: Open Play shots only (exclude Free Kicks and Penalties)
+      target_events <- target_events %>% filter(is.na(set_piece_type))
+    } else {
+      target_events <- target_events %>% filter(set_piece_type == !!event_subtype)
+    }
+  } else if ("event_subtype" %in% names(target_events)) {
+    if (!is.na(event_subtype)) {
+      target_events <- target_events %>% filter(event_subtype == !!event_subtype)
+    }
+  }
+  
+  # Join direction to events to compute aligned shot coordinates
+  join_by_list <- setNames(c("match_id", period_col_track, "team_id"), 
+                           c("match_id", period_col_events, "team_with_poss"))
+  
+  target_events <- target_events %>%
+    left_join(team_dirs, by = join_by_list) %>%
+    mutate(
+      flip_required = replace_na(flip_required, FALSE),
+      shot_x = if_else(flip_required, pitch_length - (coordinates_x * pitch_length), coordinates_x * pitch_length),
+      shot_y = if_else(flip_required, pitch_width - (coordinates_y * pitch_width), coordinates_y * pitch_width)
+    )
+  
+  # All shots must be in the attacking half (right side after flip)
+  target_events <- target_events %>% filter(shot_x >= (pitch_length / 2))
+  
+  dataset_list <- list()
+  
+  # For each target event, extract the temporal window from the tracking data
+  for (i in seq_len(nrow(target_events))) {
+    evt <- target_events[i, ]
+    m_id <- evt$match_id
+    
+    # Identify the time of the event
+    # Assumes a time_seconds column exists in events
+    evt_time <- evt$time_seconds 
+    
+    t_start <- evt_time - start_time
+    t_end <- evt_time - end_time
+    
+    # Extract the tracking window for this specific event
+    track_window <- tracking %>%
+      filter(match_id == m_id, 
+             !!sym(period_col_track) == evt[[period_col_events]],
+             time_sec_orig >= t_start, 
+             time_sec_orig <= t_end)
+    
+    # Flip the entire tracking window if the attacking team was attacking left
+    if (isTRUE(evt$flip_required)) {
+      track_window <- track_window %>%
+        mutate(
+          x_pitch = pitch_length - x_pitch,
+          y_pitch = pitch_width - y_pitch
+        )
+    }
+    
+    # Create the relative time_sec index (e.g., 1 to 30)
+    # Ensure it doesn't exceed the intended window size due to floating point rounding
+    max_time_sec <- start_time - end_time + 1
+    track_window <- track_window %>%
+      mutate(
+        time_sec = pmin(floor(time_sec_orig - t_start) + 1, max_time_sec)
+      )
+    
+    # Label attacking vs defending team
+    if ("team_with_poss" %in% names(evt) && "team_id" %in% names(track_window)) {
+      track_window <- track_window %>%
+        mutate(team_code = if_else(team_id == evt$team_with_poss, "Attack", "Defense"))
+      
+      if (!keep_all_teams) {
+        track_window <- track_window %>% filter(team_code == "Attack")
+      }
+    }
+    
+    # Ensure necessary coordinates exist and format output
+    # (Assuming long format tracking has x_pitch and y_pitch)
+    if (nrow(track_window) > 0) {
+      track_window <- track_window %>%
+        select(x = x_pitch, y = y_pitch, time_sec, match_id, player_id, any_of(c("team_code", "team_id"))) %>%
+        mutate(anchor_event_id = evt$event_id)
+      
+      dataset_list[[i]] <- track_window
+    }
+  }
+  
+  # Combine all windows into a single point pattern dataset
+  dataset <- bind_rows(dataset_list) %>% 
+    drop_na(x, y, time_sec) %>%
+    mutate(
+      x = pmin(pmax(x, 0), pitch_length),
+      y = pmin(pmax(y, 0), pitch_width)
+    )
+  
+  return(dataset)
+}
+
+# -------------------------------------------------------------------------
+# 4. Spatial Normalization & Helpers
+# -------------------------------------------------------------------------
+#' Standardize attacking direction
+#' For spatial point processes, we typically want all attacking events
+#' (like shots) to be directed towards the same side of the pitch (e.g., Right goal).
+#' This function flips the coordinates (x, y) if a team is attacking left to right.
+own_goal_direction <- function(tracking_data, pitch_length = 105, pitch_width = 68) {
+  # If the data does not have 'is_goalkeeper', add a dummy to avoid breaking older scripts
+  if (!"is_goalkeeper" %in% names(tracking_data)) {
+    warning("Column 'is_goalkeeper' not found. Adding dummy column is_goalkeeper = 0 to prevent errors.")
+    tracking_data <- tracking_data %>% mutate(is_goalkeeper = 0)
+  }
+  
+  # Robust determination of attacking direction using goalkeepers:
+  # In each match and period, the team with the higher mean X position for their goalkeeper
+  # is defending the Right goal (x = 105) and attacking the Left goal (x = 0).
+  # We flip that team's coordinates so all teams attack towards x = 105 (Right goal).
+  period_col <- if ("period" %in% names(tracking_data)) "period" else "period_id"
+  
+  if ("team_id" %in% names(tracking_data) && period_col %in% names(tracking_data)) {
+    team_dirs <- tracking_data %>%
+      filter(is_goalkeeper == 1, !is.na(team_id)) %>%
+      group_by(match_id, !!sym(period_col), team_id) %>%
+      summarize(gk_mean_x = mean(x_pitch, na.rm = TRUE), .groups = "drop") %>%
+      mutate(flip_required = gk_mean_x > (pitch_length / 2)) %>%
+      select(match_id, !!sym(period_col), team_id, flip_required)
+    
+    tracking_data <- tracking_data %>%
+      left_join(team_dirs, by = c("match_id", period_col, "team_id")) %>%
+      mutate(
+        flip_required = replace_na(flip_required, FALSE),
+        x_pitch = if_else(flip_required, pitch_length - x_pitch, x_pitch),
+        y_pitch = if_else(flip_required, pitch_width - y_pitch, y_pitch)
+      ) %>%
+      select(-flip_required)
+  } else {
+    warning("Could not find team_id or period to determine attacking direction.")
+  }
+  
+  return(tracking_data)
+}
+
+# Helper function to convert raw DFL wide tracking data into the required long format
+transform_tracking_to_long <- function(tracking_wide, match_id_val) {
+  
+  # Pitch dimensions to un-normalize coordinates
+  pitch_length <- 105
+  pitch_width <- 68
+  
+  # Use pivot_longer to convert columns like DFL-OBJ-XXXX_x, DFL-OBJ-XXXX_y into long format
+  tracking_long <- tracking_wide %>%
+    pivot_longer(
+      cols = matches("DFL-OBJ-.*_[xyds]$"),
+      names_to = c("player_id", ".value"),
+      names_pattern = "(DFL-OBJ-[A-Z0-9]+)_(.)"
+    ) %>%
+    # Remove rows where player wasn't on pitch (missing coordinates)
+    filter(!is.na(x), !is.na(y)) %>%
+    # Un-normalize coordinates
+    mutate(
+      match_id = match_id_val,
+      time_sec_orig = time_seconds,
+      x_pitch = x * pitch_length,
+      y_pitch = y * pitch_width
+    )
+  
+  return(tracking_long)
+}
